@@ -5,94 +5,216 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>بازی موشک ریاضی 🚀</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-
-body{
-  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-  background:linear-gradient(to bottom,#0a0e27 0%,#1a1f3a 50%,#2a1f3a 100%);
-  overflow:hidden;
-  height:100vh;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Vazirmatn', sans-serif;
+}
+body {
+  background: radial-gradient(circle at top, #0b0e2a 0%, #151a3a 60%, #0a0c20 100%);
+  overflow: hidden;
+  height: 100vh;
+  color: white;
+  user-select: none;
+}
+.stars {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 3s infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
 }
 
-.stars{position:fixed;width:100%;height:100%;z-index:0;}
-.star{position:absolute;width:2px;height:2px;background:white;border-radius:50%;animation:twinkle 3s infinite;}
-@keyframes twinkle{0%,100%{opacity:0.3;}50%{opacity:1;}}
-
-.game-container{
-  position:relative;width:100%;height:100vh;display:flex;flex-direction:column;
-  align-items:center;z-index:1;
+/* صفحه شروع */
+#startScreen {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 10;
+  text-align: center;
+}
+#startScreen h1 {
+  font-size: 32px;
+}
+.difficulty-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  color: white;
+  padding: 15px 40px;
+  border-radius: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.difficulty-btn:hover {
+  transform: scale(1.05);
 }
 
-.score-board{
-  background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);
-  border-radius:20px;padding:20px 40px;margin:20px;display:flex;gap:30px;
-  border:2px solid rgba(255,255,255,0.2);
+/* بازی */
+.game-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+}
+.score-board {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(6px);
+  padding: 10px 30px;
+  border-radius: 20px;
+}
+.stat {
+  text-align: center;
+}
+.stat-label { font-size: 14px; opacity: 0.8; }
+.stat-value { font-size: 26px; font-weight: bold; }
+
+.rocket-container {
+  position: relative;
+  width: 400px;
+  height: 400px;
+}
+.rocket {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 60px;
+  transition: bottom 0.5s ease-out;
+  filter: drop-shadow(0 0 15px rgba(255,120,120,0.6));
+}
+.fire {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 40px;
+  animation: flicker 0.15s infinite;
+}
+@keyframes flicker {
+  0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
 }
 
-.stat{text-align:center;color:white;}
-.stat-label{font-size:14px;opacity:0.8;margin-bottom:5px;}
-.stat-value{font-size:28px;font-weight:bold;}
-
-.rocket-container{position:relative;width:400px;height:400px;margin:20px 0;}
-.rocket{position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-font-size:60px;transition:bottom 0.3s ease-out;filter:drop-shadow(0 0 20px rgba(255,100,100,0.5));}
-.fire{position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);
-font-size:40px;animation:fireFlicker 0.1s infinite;}
-@keyframes fireFlicker{0%,100%{opacity:1;transform:translateX(-50%) scale(1);}
-50%{opacity:0.8;transform:translateX(-50%) scale(1.1);}}
-
-.fuel-bar-container{width:100%;max-width:500px;margin:20px;}
-.fuel-label{color:white;text-align:center;margin-bottom:10px;font-size:18px;font-weight:bold;}
-.fuel-bar{width:100%;height:40px;background:rgba(255,255,255,0.1);border-radius:20px;overflow:hidden;
-border:3px solid rgba(255,255,255,0.3);position:relative;}
-.fuel-fill{height:100%;background:linear-gradient(90deg,#ff6b6b,#ffd93d);
-transition:width 0.3s ease;border-radius:20px;box-shadow:0 0 20px rgba(255,215,0,0.5);}
-.fuel-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-color:white;font-weight:bold;font-size:16px;text-shadow:2px 2px 4px rgba(0,0,0,0.8);}
-
-.question-container{
-background:rgba(255,255,255,0.95);border-radius:20px;padding:30px;max-width:500px;
-width:90%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);
+.fuel-bar {
+  width: 90%;
+  max-width: 400px;
+  height: 25px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 15px;
+  overflow: hidden;
+  margin: 15px;
+}
+.fuel-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+  transition: width 0.3s ease;
 }
 
-.question{font-size:32px;font-weight:bold;color:#2c3e50;margin-bottom:20px;direction:ltr;}
-.answer-input{width:100%;padding:15px;font-size:24px;text-align:center;border:3px solid #3498db;
-border-radius:10px;margin-bottom:15px;outline:none;}
-.answer-input:focus{border-color:#2ecc71;box-shadow:0 0 10px rgba(46,204,113,0.3);}
-.submit-btn{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-color:white;border:none;padding:15px 40px;font-size:20px;font-weight:bold;
-border-radius:10px;cursor:pointer;transition:transform 0.2s;}
-.submit-btn:hover{transform:scale(1.05);}
-.submit-btn:active{transform:scale(0.95);}
+.question-container {
+  background: white;
+  color: #2c3e50;
+  border-radius: 20px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  direction: ltr; /* فرمول از چپ به راست */
+}
+.question { font-size: 28px; font-weight: bold; margin-bottom: 15px; }
+.answer-input {
+  width: 100%;
+  font-size: 22px;
+  text-align: center;
+  padding: 10px;
+  border: 3px solid #3498db;
+  border-radius: 8px;
+}
+.submit-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.submit-btn:hover { transform: scale(1.05); }
 
-.feedback{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-font-size:80px;font-weight:bold;z-index:1000;opacity:0;transition:opacity 0.3s;}
-.feedback.show{opacity:1;}
-
-.game-over{position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,0.9);display:none;justify-content:center;align-items:center;z-index:2000;}
-.game-over.show{display:flex;}
-.game-over-content{background:white;padding:40px;border-radius:20px;text-align:center;max-width:500px;}
-.game-over-title{font-size:36px;margin-bottom:20px;color:#e74c3c;}
-.final-score{font-size:48px;color:#3498db;margin:20px 0;}
-.restart-btn{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-color:white;border:none;padding:15px 40px;font-size:20px;font-weight:bold;
-border-radius:10px;cursor:pointer;margin-top:20px;}
-.start-screen{position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,0.9);display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;z-index:3000;}
-.diff-btn{padding:15px 40px;margin:10px;background:linear-gradient(135deg,#2ecc71,#27ae60);
-border:none;border-radius:10px;color:white;font-size:22px;cursor:pointer;}
-.diff-btn:hover{transform:scale(1.05);}
+/* گیم اور */
+#gameOver {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+#gameOver.show { display: flex; }
+#gameOverContent {
+  background: white;
+  color: #333;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 400px;
+}
+.restart-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  font-size: 18px;
+  border-radius: 8px;
+  margin-top: 15px;
+  cursor: pointer;
+}
+.menu-link {
+  margin-top: 15px;
+  display: inline-block;
+  color: #555;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+}
 </style>
 </head>
+
 <body>
 <div class="stars" id="stars"></div>
 
-<div class="start-screen" id="startScreen">
-  <h1 style="font-size:36px;margin-bottom:30px;">🚀 انتخاب سختی بازی</h1>
-  <button class="diff-btn" onclick="startGame('easy')">آسان</button>
-  <button class="diff-btn" onclick="startGame('medium')">متوسط</button>
-  <button class="diff-btn" onclick="startGame('hard')">سخت</button>
+<div id="startScreen">
+  <h1>🚀 موشک ریاضی</h1>
+  <p>درجه سختی را انتخاب کن:</p>
+  <button class="difficulty-btn" onclick="startGame('easy')">آسان</button>
+  <button class="difficulty-btn" onclick="startGame('normal')">معمولی</button>
+  <button class="difficulty-btn" onclick="startGame('hard')">سخت</button>
 </div>
 
 <div class="game-container" id="gameContainer" style="display:none;">
@@ -103,151 +225,127 @@ border:none;border-radius:10px;color:white;font-size:22px;cursor:pointer;}
   </div>
 
   <div class="rocket-container">
-    <div class="rocket" id="rocket">🚀<div class="fire" id="fire">🔥</div></div>
+    <div class="rocket" id="rocket">🚀<div class="fire">🔥</div></div>
   </div>
 
-  <div class="fuel-bar-container">
-    <div class="fuel-label">سوخت: <span id="fuelTime">20</span> ثانیه</div>
-    <div class="fuel-bar">
-      <div class="fuel-fill" id="fuelFill"></div>
-      <div class="fuel-text" id="fuelPercent">100%</div>
-    </div>
-  </div>
+  <div class="fuel-bar"><div class="fuel-fill" id="fuelFill"></div></div>
 
   <div class="question-container">
-    <div class="question" id="question">8 × 7 = ?</div>
-    <input type="number" class="answer-input" id="answerInput" placeholder="پاسخ خود را وارد کنید">
-    <button class="submit-btn" onclick="checkAnswer()">ثبت پاسخ</button>
+    <div class="question" id="question"></div>
+    <input type="number" class="answer-input" id="answerInput" placeholder="پاسخ">
+    <button class="submit-btn" onclick="checkAnswer()">ثبت</button>
   </div>
 </div>
 
-<div class="feedback" id="feedback"></div>
-
-<div class="game-over" id="gameOver">
-  <div class="game-over-content">
-    <div class="game-over-title">بازی تمام شد! 🎮</div>
-    <div class="final-score" id="finalScore">0</div>
-    <p style="font-size:20px;color:#7f8c8d;">ارتفاع نهایی</p>
+<div id="gameOver">
+  <div id="gameOverContent">
+    <h2>🎮 بازی تمام شد!</h2>
+    <div>ارتفاع نهایی: <span id="finalScore">0</span></div>
+    <div class="menu-link" onclick="showHistory()">📜 تاریخچه رکوردها</div>
     <button class="restart-btn" onclick="restartGame()">شروع دوباره</button>
+    <div class="menu-link" onclick="backToMenu()">بازگشت به منو</div>
   </div>
 </div>
 
 <script>
-let score=0,altitude=0,currentFuel=20,maxFuel=20,currentQuestion={},fuelTimer;
-let highscore=localStorage.getItem('rocketHighScore')||0;
-let difficulty='easy';
-document.getElementById('highscore').textContent=highscore;
+let score = 0, altitude = 0, fuel = 20, maxFuel = 20, level = 'normal';
+let fuelTimer, currentQuestion, highscore = localStorage.getItem('rocketHighScore') || 0;
+document.getElementById('highscore').textContent = highscore;
 
 function createStars(){
-  const starsContainer=document.getElementById('stars');
-  for(let i=0;i<100;i++){
-    const star=document.createElement('div');
-    star.className='star';
-    star.style.left=Math.random()*100+'%';
-    star.style.top=Math.random()*100+'%';
-    star.style.animationDelay=Math.random()*3+'s';
-    starsContainer.appendChild(star);
+  const c=document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    s.style.left=Math.random()*100+'%';
+    s.style.top=Math.random()*100+'%';
+    s.style.animationDelay=Math.random()*3+'s';
+    c.appendChild(s);
   }
 }
+createStars();
 
-function startGame(level){
-  difficulty=level;
+function startGame(diff){
+  level = diff;
   document.getElementById('startScreen').style.display='none';
   document.getElementById('gameContainer').style.display='flex';
   restartGame();
 }
 
 function generateQuestion(){
-  let operations=[];
-  if(difficulty==='easy')operations=['+','-'];
-  else if(difficulty==='medium')operations=['+','-','×'];
-  else operations=['+','-','×','÷'];
-
-  const operation=operations[Math.floor(Math.random()*operations.length)];
-  let num1,num2,answer;
-
-  if(operation==='+'){num1=Math.floor(Math.random()*90)+10;num2=Math.floor(Math.random()*9)+1;answer=num1+num2;}
-  else if(operation==='-'){num1=Math.floor(Math.random()*90)+10;num2=Math.floor(Math.random()*9)+1;answer=num1-num2;}
-  else if(operation==='×'){
-    num1=difficulty==='hard'?Math.floor(Math.random()*90)+10:Math.floor(Math.random()*10)+1;
-    num2=Math.floor(Math.random()*9)+1;answer=num1*num2;
-  }else{
-    num2=Math.floor(Math.random()*9)+1;answer=Math.floor(Math.random()*20)+1;num1=num2*answer;
-  }
-
-  currentQuestion={num1,num2,operation,answer};
-  document.getElementById('question').textContent=`${num1} ${operation} ${num2} = ?`;
-  document.getElementById('answerInput').value='';
-  document.getElementById('answerInput').focus();
+  let n1,n2,op,ans;
+  const ops = ['+','-','×','÷'];
+  op = ops[Math.floor(Math.random()*4)];
+  let range = level==='easy'? [1,9] : level==='normal'? [10,50] : [20,100];
+  n1 = Math.floor(Math.random()*(range[1]-range[0]))+range[0];
+  n2 = Math.floor(Math.random()*(range[1]-range[0]))+range[0];
+  if(op==='÷'){ n2=Math.max(1,n2); n1=n2*Math.floor(Math.random()*10+1); ans=n1/n2; }
+  else if(op==='+') ans=n1+n2;
+  else if(op==='-') ans=n1-n2;
+  else ans=n1*n2;
+  currentQuestion={n1,n2,op,ans};
+  document.getElementById('question').textContent=`${n1} ${op} ${n2} = ?`;
 }
 
 function checkAnswer(){
-  const userAnswer=parseInt(document.getElementById('answerInput').value);
-  if(isNaN(userAnswer))return;
-  const feedback=document.getElementById('feedback');
-
-  if(userAnswer===currentQuestion.answer){
-    feedback.textContent='✅';feedback.style.color='#2ecc71';
-    feedback.classList.add('show');score+=10;altitude+=100;
-    currentFuel=Math.min(currentFuel+20,maxFuel);
-  }else{
-    feedback.textContent='❌';feedback.style.color='#e74c3c';
-    feedback.classList.add('show');maxFuel=Math.max(maxFuel-2,2);
-    currentFuel=Math.min(currentFuel,maxFuel);
-  }
-
-  setTimeout(()=>feedback.classList.remove('show'),500);
-  updateRocketPosition();updateUI();generateQuestion();
-}
-
-function updateRocketPosition(){
-  const rocket=document.getElementById('rocket');
-  const maxHeight=350;const newBottom=Math.min((altitude/2),maxHeight);
-  rocket.style.bottom=newBottom+'px';
+  const val=parseInt(document.getElementById('answerInput').value);
+  if(val===currentQuestion.ans){
+    score+=10; altitude+=100; fuel=Math.min(fuel+5,maxFuel);
+  } else fuel=Math.max(fuel-3,0);
+  updateUI(); generateQuestion();
+  if(fuel<=0) endGame();
 }
 
 function updateUI(){
   document.getElementById('score').textContent=score;
   document.getElementById('altitude').textContent=altitude;
-  document.getElementById('fuelTime').textContent=currentFuel;
-  const fuelPercent=(currentFuel/maxFuel)*100;
-  const fuelFill=document.getElementById('fuelFill');
-  document.getElementById('fuelFill').style.width=fuelPercent+'%';
-  document.getElementById('fuelPercent').textContent=Math.round(fuelPercent)+'%';
-  if(fuelPercent>50)fuelFill.style.background='linear-gradient(90deg,#2ecc71,#27ae60)';
-  else if(fuelPercent>25)fuelFill.style.background='linear-gradient(90deg,#f39c12,#e67e22)';
-  else fuelFill.style.background='linear-gradient(90deg,#e74c3c,#c0392b)';
+  document.getElementById('fuelFill').style.width=(fuel/maxFuel*100)+'%';
+  const rocket=document.getElementById('rocket');
+  rocket.style.bottom=Math.min(altitude/10,350)+'px';
 }
 
 function startFuelTimer(){
+  clearInterval(fuelTimer);
   fuelTimer=setInterval(()=>{
-    currentFuel--;updateUI();
-    if(currentFuel<=0)endGame();
+    fuel--;
+    updateUI();
+    if(fuel<=0) endGame();
   },1000);
 }
 
 function endGame(){
   clearInterval(fuelTimer);
   if(altitude>highscore){
-    highscore=altitude;localStorage.setItem('rocketHighScore',highscore);
-    document.getElementById('highscore').textContent=highscore;
+    highscore=altitude;
+    localStorage.setItem('rocketHighScore',highscore);
   }
+  let history=JSON.parse(localStorage.getItem('rocketHistory')||'[]');
+  history.push({date:new Date().toLocaleString('fa-IR'),score:altitude});
+  localStorage.setItem('rocketHistory',JSON.stringify(history));
   document.getElementById('finalScore').textContent=altitude;
   document.getElementById('gameOver').classList.add('show');
 }
 
 function restartGame(){
-  score=0;altitude=0;currentFuel=20;maxFuel=20;
+  score=0; altitude=0; fuel=maxFuel;
   document.getElementById('gameOver').classList.remove('show');
-  document.getElementById('rocket').style.bottom='0px';
-  updateUI();generateQuestion();startFuelTimer();
+  updateUI(); generateQuestion(); startFuelTimer();
 }
 
-document.getElementById('answerInput').addEventListener('keypress',e=>{
-  if(e.key==='Enter')checkAnswer();
-});
+function backToMenu(){
+  document.getElementById('gameOver').classList.remove('show');
+  document.getElementById('gameContainer').style.display='none';
+  document.getElementById('startScreen').style.display='flex';
+}
 
-createStars();
+function showHistory(){
+  let h=JSON.parse(localStorage.getItem('rocketHistory')||'[]');
+  if(h.length===0){alert('هنوز رکوردی ثبت نشده!');return;}
+  let txt='📜 تاریخچه رکوردها:\n';
+  h.slice(-10).reverse().forEach(r=>txt+=`${r.date} → ${r.score}\n`);
+  alert(txt);
+}
+document.getElementById('answerInput').addEventListener('keypress',e=>{if(e.key==='Enter')checkAnswer();});
 </script>
 </body>
 </html>
