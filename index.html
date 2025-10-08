@@ -1,417 +1,309 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>بازی موشک ریاضی</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>موشک ریاضی — نسخهٔ ۲.۰</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; }
-        body {
+        *{box-sizing:border-box;margin:0;padding:0}
+        html,body{height:100%}
+        body{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom, #0a0e27 0%, #1a1f3a 50%, #2a1f3a 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-            width: 100%;
-            height: 100%;
+            background:linear-gradient(180deg,#071226 0%,#14203a 60%,#1f2636 100%);
+            color:#fff;overflow:hidden;
         }
-        .stars { position: fixed; width: 100%; height: 100%; z-index: 0; top: 0; left: 0; }
-        .star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; animation: twinkle 3s infinite; }
-        @keyframes twinkle { 0%,100%{opacity:0.3}50%{opacity:1} }
-        .space-object { position: absolute; font-size: clamp(20px,4vw,30px); animation: floatSpace 15s ease-in-out infinite; pointer-events: none; }
-        @keyframes floatSpace { 0%,100%{transform:translate(0,0) rotate(0deg)}25%{transform:translate(30px,-30px) rotate(90deg)}50%{transform:translate(-20px,20px) rotate(180deg)}75%{transform:translate(20px,30px) rotate(270deg)} }
-        .shooting-star { position: absolute; width: 3px; height: 3px; background: white; border-radius: 50%; box-shadow:0 0 10px 2px white; animation: shootingStar 3s linear infinite; }
-        @keyframes shootingStar { 0%{transform:translate(0,0);opacity:1}100%{transform:translate(-300px,300px);opacity:0} }
+        .wrap{height:100%;display:flex;align-items:center;justify-content:center;padding:20px}
+        .card{width:100%;max-width:980px;background:rgba(255,255,255,0.03);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.6);backdrop-filter:blur(6px)}
+        .header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+        .title{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
+        .controls{display:flex;gap:8px;align-items:center}
+        button,select{cursor:pointer}
+        .btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:10px 12px;border-radius:10px;font-weight:700}
+        .btn.ghost{background:transparent;border:2px solid rgba(255,255,255,0.12)}
+        .main{display:flex;gap:18px;margin-top:18px}
+        .left{flex:1;min-width:280px}
+        .right{width:360px;max-width:360px}
 
-        /* Menu */
-        .menu-screen { position: fixed; inset:0; display:flex; justify-content:center; align-items:center; z-index:100; overflow-y:auto; padding:20px; }
-        .menu-container { background: rgba(255,255,255,0.95); border-radius:20px; padding:clamp(20px,5vw,40px); max-width:620px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.5); margin:auto; }
-        .game-title { font-size:clamp(28px,8vw,48px); font-weight:bold; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:10px; }
-        .game-subtitle { font-size:clamp(14px,4vw,20px); color:#7f8c8d; margin-bottom:20px; }
-        .rocket-icon { font-size:clamp(50px,12vw,80px); margin:15px 0; animation:floatRocket 3s ease-in-out infinite; }
-        @keyframes floatRocket { 0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)} }
+        /* Game panel */
+        .panel{background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(0,0,0,0.03));border-radius:12px;padding:14px}
+        .score-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:12px}
+        .stat{background:rgba(255,255,255,0.03);padding:8px;border-radius:10px;text-align:center;min-width:75px}
+        .stat .label{font-size:12px;color:rgba(255,255,255,0.7)}
+        .stat .value{font-size:18px;font-weight:800}
+        .rocket-area{display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px}
+        .rocket-stage{position:relative;width:100%;height:240px;background:linear-gradient(180deg,#071226,rgba(0,0,0,0));border-radius:12px;overflow:hidden}
+        .rocket{position:absolute;left:50%;transform:translateX(-50%);bottom:0;font-size:56px;transition:bottom .45s cubic-bezier(.2,.9,.2,1)}
+        .fuel-bar{width:100%;height:18px;background:rgba(255,255,255,0.05);border-radius:10px;overflow:hidden;border:2px solid rgba(255,255,255,0.06)}
+        .fuel-fill{height:100%;width:100%;background:linear-gradient(90deg,#2ecc71,#27ae60);transition:width .3s}
+        .fuel-text{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-weight:700}
 
-        .level-buttons { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:20px 0; }
-        .level-btn { background:white; border:3px solid #3498db; padding:15px; border-radius:15px; cursor:pointer; transition:all .3s; font-size:clamp(12px,3vw,16px); font-weight:bold; }
-        .level-btn:hover { transform:translateY(-3px); box-shadow:0 5px 15px rgba(52,152,219,0.3); }
-        .level-btn.easy { border-color:#2ecc71; background:linear-gradient(135deg,#d4edda 0%,#c3e6cb 100%); }
-        .level-btn.medium { border-color:#f39c12; background:linear-gradient(135deg,#fff3cd 0%,#ffeaa7 100%); }
-        .level-btn.hard { border-color:#e74c3c; background:linear-gradient(135deg,#f8d7da 0%,#f5c6cb 100%); }
-        .level-btn.expert { border-color:#9b59b6; background:linear-gradient(135deg,#e8daef 0%,#d7bde2 100%); }
-        .level-icon { font-size:clamp(24px,6vw,32px); display:block; margin-bottom:5px; }
-        .level-title { font-size:clamp(14px,3.5vw,18px); color:#2c3e50; }
-        .level-desc { font-size:clamp(10px,2.5vw,12px); color:#7f8c8d; margin-top:5px; }
+        .question-box{margin-top:14px}
+        .level-badge{display:inline-block;padding:6px 12px;border-radius:14px;background:rgba(0,0,0,0.15);font-weight:700}
+        .question{background:#fff;padding:14px;border-radius:10px;color:#222;font-weight:800;font-size:28px;text-align:center;margin-top:12px}
+        .answer-row{display:flex;gap:8px;margin-top:12px}
+        .answer-input{flex:1;padding:12px;border-radius:10px;border:2px solid rgba(0,0,0,0.06);font-size:20px;text-align:center}
+        .submit{width:120px}
+        .feedback{height:64px;display:flex;align-items:center;justify-content:center;font-size:38px;margin-top:10px}
+        .explain{margin-top:8px;color:rgba(255,255,255,0.85);font-size:14px}
 
-        .medals-section { margin-top:15px; padding:15px; background:#f8f9fa; border-radius:15px; }
-        .medals-title { font-size:clamp(12px,3vw,16px); font-weight:bold; color:#2c3e50; margin-bottom:10px; }
-        .medals-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-        .medal-item { text-align:center; padding:8px; background:white; border-radius:10px; border:2px solid #e0e0e0; min-height:60px; display:flex; flex-direction:column; justify-content:center; }
-        .medal-item.unlocked { border-color:#ffd700; box-shadow:0 0 10px rgba(255,215,0,0.3); }
-        .medal-item.locked { opacity:0.3; }
-        .medal-icon { font-size:clamp(20px,5vw,28px); margin-bottom:3px; }
-        .medal-name { font-size:clamp(8px,2vw,10px); color:#7f8c8d; }
-        .hidden { display:none!important; }
+        /* Right column */
+        .right .panel{margin-bottom:12px}
+        .settings-row{display:flex;flex-direction:column;gap:8px}
+        label{font-size:13px;color:rgba(255,255,255,0.8);margin-bottom:6px}
+        .small{font-size:13px;color:rgba(255,255,255,0.8)}
+        .leaderboard{list-style:none;padding:8px;margin:0}
+        .leader-item{display:flex;justify-content:space-between;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:6px}
 
-        /* Game */
-        .game-container { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; z-index:1; overflow-y:auto; padding:10px; }
-        .top-bar { width:100%; max-width:1200px; display:flex; justify-content:space-between; align-items:center; padding:10px; flex-wrap:wrap; gap:10px; }
-        .back-btn { background:rgba(255,255,255,0.2); border:2px solid rgba(255,255,255,0.3); color:white; padding:8px 16px; border-radius:10px; cursor:pointer; font-size:clamp(12px,3vw,16px); font-weight:bold; backdrop-filter:blur(10px); white-space:nowrap; }
-        .score-board { background:rgba(255,255,255,0.08); backdrop-filter:blur(10px); border-radius:15px; padding:10px 20px; display:flex; gap:15px; border:2px solid rgba(255,255,255,0.12); flex-wrap:wrap; justify-content:center; }
-        .stat { text-align:center; color:white; min-width:60px; }
-        .stat-label { font-size:clamp(10px,2.5vw,12px); opacity:0.8; margin-bottom:3px; }
-        .stat-value { font-size:clamp(18px,4vw,24px); font-weight:bold; }
-        .rocket-container { position:relative; width:100%; max-width:420px; height:clamp(220px,40vh,380px); margin:10px 0; flex-shrink:0; }
-        .rocket { position:absolute; bottom:0; left:50%; transform:translateX(-50%); font-size:clamp(40px,10vw,60px); transition:bottom .5s ease; filter:drop-shadow(0 0 20px rgba(255,100,100,0.5)); }
-        .fire { position:absolute; bottom:-25px; left:50%; transform:translateX(-50%); font-size:clamp(30px,8vw,40px); animation:fireFlicker .1s infinite; }
-        @keyframes fireFlicker { 0%,100%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:0.8;transform:translateX(-50%) scale(1.1)} }
-        .planets { position:absolute; width:100%; height:100%; pointer-events:none; overflow:hidden; }
-
-        .fuel-bar-container { width:100%; max-width:520px; margin:10px 0; padding:0 10px; }
-        .fuel-label { color:white; text-align:center; margin-bottom:8px; font-size:clamp(14px,3.5vw,18px); font-weight:bold; }
-        .fuel-bar { width:100%; height:clamp(30px,6vw,36px); background:rgba(255,255,255,0.08); border-radius:20px; overflow:hidden; border:3px solid rgba(255,255,255,0.18); position:relative; }
-        .fuel-fill { height:100%; background:linear-gradient(90deg,#2ecc71,#27ae60); transition:width .3s ease,background .3s ease; border-radius:20px; box-shadow:0 0 20px rgba(46,204,113,0.35); }
-        .fuel-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:white; font-weight:bold; font-size:clamp(12px,3vw,14px); text-shadow:2px 2px 4px rgba(0,0,0,0.6); }
-
-        .question-container { background:rgba(255,255,255,0.95); border-radius:20px; padding:clamp(15px,4vw,25px); max-width:520px; width:100%; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.28); margin:10px; }
-        .level-badge { display:inline-block; padding:6px 12px; border-radius:20px; font-weight:bold; font-size:clamp(12px,3vw,14px); margin-bottom:10px; }
-        .question { font-size:clamp(28px,7vw,42px); font-weight:bold; color:#2c3e50; margin-bottom:15px; direction:ltr; font-family:'Courier New',monospace; letter-spacing:2px; }
-        .answer-input { width:100%; padding:clamp(12px,3vw,15px); font-size:clamp(20px,5vw,24px); text-align:center; border:3px solid #3498db; border-radius:10px; margin-bottom:12px; outline:none; direction:ltr; font-family:monospace; }
-        .answer-input:focus { border-color:#2ecc71; box-shadow:0 0 10px rgba(46,204,113,0.25); }
-        .submit-btn { background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; border:none; padding:clamp(12px,3vw,15px) clamp(30px,7vw,40px); font-size:clamp(14px,3.5vw,18px); font-weight:bold; border-radius:10px; cursor:pointer; transition:transform .2s; width:100%; max-width:300px; }
-        .submit-btn:hover { transform:scale(1.05); }
-
-        .feedback { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); font-size:clamp(60px,15vw,100px); font-weight:bold; z-index:1000; opacity:0; transition:opacity .3s; text-shadow:0 0 20px rgba(0,0,0,0.5); pointer-events:none; }
-        .feedback.show { opacity:1; animation:feedbackPop .45s ease; }
-        @keyframes feedbackPop { 0%{transform:translate(-50%,-50%) scale(0)}50%{transform:translate(-50%,-50%) scale(1.2)}100%{transform:translate(-50%,-50%) scale(1)} }
-
-        .game-over { position:fixed; inset:0; background:rgba(0,0,0,0.9); display:none; justify-content:center; align-items:center; z-index:2000; padding:20px; overflow-y:auto; }
-        .game-over.show { display:flex; }
-        .game-over-content { background:white; padding:clamp(20px,5vw,40px); border-radius:20px; text-align:center; max-width:500px; width:100%; margin:auto; }
-        .game-over-title { font-size:clamp(24px,6vw,36px); margin-bottom:10px; color:#2c3e50; }
-        .game-over-icon { font-size:clamp(50px,12vw,80px); margin:15px 0; }
-
-        .final-stats { background:#f8f9fa; padding:clamp(15px,4vw,20px); border-radius:15px; margin:15px 0; }
-        .stat-row { display:flex; justify-content:space-between; margin:8px 0; font-size:clamp(14px,3.5vw,18px); gap:10px; }
-        .stat-row strong { color:#3498db; }
-
-        .new-medal-alert { background:linear-gradient(135deg,#ffd700 0%,#ffed4e 100%); padding:15px; border-radius:10px; margin:15px 0; animation:medalShine 1s ease infinite; }
-        @keyframes medalShine { 0%,100%{box-shadow:0 0 20px rgba(255,215,0,0.5)}50%{box-shadow:0 0 30px rgba(255,215,0,0.8)} }
-
-        .buttons-row { display:flex; gap:10px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
-        .restart-btn, .menu-btn { flex:1; min-width:140px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; border:none; padding:clamp(12px,3vw,15px) clamp(15px,4vw,20px); font-size:clamp(13px,3vw,16px); font-weight:bold; border-radius:10px; cursor:pointer; transition:transform .2s; }
-        .menu-btn { background:linear-gradient(135deg,#2ecc71 0%,#27ae60 100%); }
-        .restart-btn:hover, .menu-btn:hover { transform:scale(1.05); }
-
-        .combo-badge { position:fixed; top:clamp(100px,15vh,120px); right:10px; background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%); color:white; padding:clamp(10px,3vw,15px) clamp(15px,4vw,25px); border-radius:15px; font-size:clamp(18px,4vw,24px); font-weight:bold; z-index:100; box-shadow:0 5px 20px rgba(245,87,108,0.5); animation:comboPulse .5s ease; }
-        @keyframes comboPulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.1)} }
-
-        .medal-popup { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); background:white; padding:clamp(25px,6vw,40px); border-radius:20px; text-align:center; z-index:3000; box-shadow:0 20px 60px rgba(0,0,0,0.5); max-width:90%; width:400px; }
-        .medal-popup.show { animation:medalPopup .5s ease forwards; }
-        @keyframes medalPopup { 0%{transform:translate(-50%,-50%) scale(0) rotate(0deg)}50%{transform:translate(-50%,-50%) scale(1.1) rotate(10deg)}100%{transform:translate(-50%,-50%) scale(1) rotate(0deg)} }
-        .medal-popup-icon { font-size:clamp(60px,15vw,100px); margin-bottom:15px; animation:medalRotate 2s ease infinite; }
-        @keyframes medalRotate { 0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)} }
-        .medal-popup-title { font-size:clamp(20px,5vw,28px); font-weight:bold; color:#2c3e50; margin-bottom:10px; }
-        .medal-popup-desc { font-size:clamp(13px,3vw,16px); color:#7f8c8d; margin-bottom:20px; }
-        .medal-popup-btn { background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; border:none; padding:clamp(10px,2.5vw,12px) clamp(20px,5vw,30px); font-size:clamp(13px,3vw,16px); font-weight:bold; border-radius:10px; cursor:pointer; transition:transform .2s; }
-        .medal-popup-btn:hover { transform:scale(1.05); }
-
-        @media (max-width:600px){ .level-buttons{grid-template-columns:1fr 1fr} .medals-grid{grid-template-columns:repeat(4,1fr)} .top-bar{flex-direction:column} .score-board{width:100%} .combo-badge{top:80px;right:5px;padding:8px 15px} }
-        @media (max-width:400px){ .level-buttons{gap:8px} .medals-grid{gap:5px} .buttons-row{flex-direction:column} .restart-btn,.menu-btn{width:100%} }
-        @media (min-width:1024px){ .game-container{justify-content:center} }
+        /* responsive */
+        @media (max-width:920px){.main{flex-direction:column}.right{width:100%;max-width:none}}
     </style>
 </head>
 <body>
-    <div class="stars" id="stars"></div>
-
-    <!-- MENU -->
-    <div class="menu-screen" id="menuScreen">
-        <div class="menu-container">
-            <div class="game-title">🚀 موشک ریاضی</div>
-            <div class="game-subtitle">ماجراجویی در دنیای اعداد — مناسب 11 تا 12 سال</div>
-            <div class="rocket-icon">🚀</div>
-
-            <h3 style="margin:15px 0; color:#2c3e50; font-size:clamp(14px,3.5vw,18px);">سطح مورد نظر را انتخاب کن:</h3>
-
-            <div class="level-buttons">
-                <button class="level-btn easy" onclick="startGame('easy')">
-                    <span class="level-icon">😊</span>
-                    <div class="level-title">آسان</div>
-                    <div class="level-desc">جمع و تفریق</div>
-                </button>
-                <button class="level-btn medium" onclick="startGame('medium')">
-                    <span class="level-icon">🤔</span>
-                    <div class="level-title">متوسط</div>
-                    <div class="level-desc">جمع، تفریق، ضرب</div>
-                </button>
-                <button class="level-btn hard" onclick="startGame('hard')">
-                    <span class="level-icon">😎</span>
-                    <div class="level-title">سخت</div>
-                    <div class="level-desc">همه عملیات (شامل تقسیم)</div>
-                </button>
-                <button class="level-btn expert" onclick="startGame('expert')">
-                    <span class="level-icon">🔥</span>
-                    <div class="level-title">استاد</div>
-                    <div class="level-desc">سرعتی و چالش‌برانگیز</div>
-                </button>
+    <div class="wrap">
+        <div class="card">
+            <div class="header">
+                <div class="title">🚀 موشک ریاضی — نسخهٔ ۲.۰</div>
+                <div class="controls">
+                    <select id="modeSelect" class="ghost">
+                        <option value="play">🎮 بازی (چالش)</option>
+                        <option value="practice">🧪 تمرین آزاد</option>
+                    </select>
+                    <select id="difficultySelect" class="ghost">
+                        <option value="easy">آسان</option>
+                        <option value="medium">متوسط</option>
+                        <option value="hard">سخت</option>
+                        <option value="expert">استاد</option>
+                    </select>
+                    <button id="startBtn" class="btn">▶ شروع</button>
+                    <button id="soundBtn" class="btn ghost">🔊 صدا روشن</button>
+                </div>
             </div>
 
-            <div class="medals-section">
-                <div class="medals-title">🏆 مدال‌های من</div>
-                <div class="medals-grid" id="medalsGrid"></div>
-            </div>
+            <div class="main">
+                <div class="left">
+                    <div class="panel">
+                        <div class="score-row">
+                            <div class="stat"><div class="label">امتیاز</div><div class="value" id="score">0</div></div>
+                            <div class="stat"><div class="label">ارتفاع</div><div class="value" id="altitude">0</div></div>
+                            <div class="stat"><div class="label">سوخت</div><div class="value" id="fuelTime">0</div></div>
+                            <div class="stat"><div class="label">رکورد</div><div class="value" id="highscore">0</div></div>
+                        </div>
 
-            <div style="margin-top:15px; padding:15px; background:#f8f9fa; border-radius:15px;">
-                <div style="font-size:clamp(12px,3vw,14px); color:#7f8c8d;">
-                    <strong>رکورد شما:</strong> <span id="menuHighscore" style="color:#3498db; font-size:clamp(16px,4vw,20px); font-weight:bold;">0</span> متر
+                        <div class="rocket-area">
+                            <div class="rocket-stage" id="rocketStage">
+                                <div id="rocket" class="rocket">🚀</div>
+                            </div>
+
+                            <div style="width:100%">
+                                <div class="fuel-bar" style="position:relative">
+                                    <div id="fuelFill" class="fuel-fill"></div>
+                                    <div class="fuel-text" id="fuelPercent">100%</div>
+                                </div>
+                            </div>
+
+                            <div class="question-box">
+                                <div class="level-badge" id="levelBadge">آسان</div>
+                                <div class="question" id="question">—</div>
+
+                                <div class="answer-row">
+                                    <input id="answerInput" class="answer-input" inputmode="numeric" autocomplete="off" placeholder="پاسخ را وارد کن">
+                                    <button id="submitBtn" class="btn submit">ثبت</button>
+                                </div>
+
+                                <div class="feedback" id="feedback"></div>
+                                <div class="explain" id="explain"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="margin-top:12px">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>آمار بازی</strong><small class="small">۶۰ ثانیه پس از پایان نمایش داده می‌شود</small></div>
+                        <div class="small">پاسخ درست: <span id="correctCount">0</span></div>
+                        <div class="small">پاسخ غلط: <span id="wrongCount">0</span></div>
+                        <div class="small">کمبو فعلی: <span id="combo">0</span></div>
+                    </div>
+                </div>
+
+                <div class="right">
+                    <div class="panel">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>تنظیمات</strong></div>
+                        <div class="settings-row">
+                            <div>
+                                <label>زمان هر سؤال (ثانیه)</label>
+                                <input id="timeLimitInput" type="range" min="4" max="20" value="10">
+                                <div class="small">مقدار: <span id="timeLimitValue">10</span>s</div>
+                            </div>
+
+                            <div>
+                                <label>فعال‌سازی صدا</label>
+                            </div>
+
+                            <div>
+                                <label>ذخیرهٔ رکورد‌ها</label>
+                                <select id="saveMode">
+                                    <option value="local">LocalStorage</option>
+                                    <option value="none">خاموش</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>جدول رتبه‌بندی</strong><button id="clearBoard" class="btn ghost">پاک‌سازی</button></div>
+                        <ul id="leaderboard" class="leaderboard"></ul>
+                    </div>
+
+                    <div class="panel">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>راهنما</strong></div>
+                        <div class="small">• برای سن ۱۱–۱۲ سال مناسب است.<br>• در حالت تمرین محدودیت زمان وجود ندارد.<br>• در صورت پاسخ اشتباه، پاسخ درست نشان داده می‌شود.</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- GAME -->
-    <div class="game-container hidden" id="gameContainer">
-        <div class="top-bar">
-            <button class="back-btn" onclick="backToMenu()">↩️ بازگشت</button>
+<script>
+// --- state ---
+let score=0, altitude=0, currentFuel=20, maxFuel=20;
+let currentQuestion={}, fuelTimer=null, questionTimer=null;
+let highscore = parseInt(localStorage.getItem('rocketHighScore'))||0;
+let currentLevel='easy', correctCount=0, wrongCount=0, combo=0;
+let soundOn=true, mode='play';
+let saveMode='local';
+let timeLimit=10; // seconds per question
+let leaderboardKey='rocketLeaderboard_v2';
 
-            <div class="score-board">
-                <div class="stat"><div class="stat-label">امتیاز</div><div class="stat-value" id="score">0</div></div>
-                <div class="stat"><div class="stat-label">ارتفاع</div><div class="stat-value" id="altitude">0</div></div>
-                <div class="stat"><div class="stat-label">رکورد</div><div class="stat-value" id="highscore">0</div></div>
-            </div>
-        </div>
+const levelConfig = {
+  easy:{name:'آسان',ops:['+','-'],min:1,max:20,initialFuel:30,fuelBonus:6,fuelPenalty:2,scoreBase:10},
+  medium:{name:'متوسط',ops:['+','-','×'],min:2,max:50,initialFuel:25,fuelBonus:8,fuelPenalty:3,scoreBase:12},
+  hard:{name:'سخت',ops:['+','-','×','÷'],min:5,max:99,initialFuel:22,fuelBonus:10,fuelPenalty:4,scoreBase:15},
+  expert:{name:'استاد',ops:['+','-','×','÷'],min:6,max:140,initialFuel:18,fuelBonus:8,fuelPenalty:6,scoreBase:18}
+};
 
-        <div class="rocket-container">
-            <div class="planets" id="planets"></div>
-            <div class="rocket" id="rocket">🚀<div class="fire" id="fire">🔥</div></div>
-        </div>
+// UI refs
+const scoreEl=document.getElementById('score');
+const altitudeEl=document.getElementById('altitude');
+const fuelTimeEl=document.getElementById('fuelTime');
+const fuelFillEl=document.getElementById('fuelFill');
+const fuelPercentEl=document.getElementById('fuelPercent');
+const questionEl=document.getElementById('question');
+const levelBadge=document.getElementById('levelBadge');
+const answerInput=document.getElementById('answerInput');
+const feedbackEl=document.getElementById('feedback');
+const explainEl=document.getElementById('explain');
+const highscoreEl=document.getElementById('highscore');
+const correctCountEl=document.getElementById('correctCount');
+const wrongCountEl=document.getElementById('wrongCount');
+const comboEl=document.getElementById('combo');
+const leaderboardEl=document.getElementById('leaderboard');
 
-        <div class="fuel-bar-container">
-            <div class="fuel-label">⛽ سوخت: <span id="fuelTime">20</span> ثانیه</div>
-            <div class="fuel-bar">
-                <div class="fuel-fill" id="fuelFill" style="width:100%"></div>
-                <div class="fuel-text" id="fuelPercent">100%</div>
-            </div>
-        </div>
+// init
+highscoreEl.textContent = highscore;
+createLeaderboardUI();
 
-        <div class="question-container">
-            <div class="level-badge" id="levelBadge">آسان</div>
-            <div class="question" id="question">8 × 7 = ?</div>
-            <input type="number" class="answer-input" id="answerInput" placeholder="پاسخ" inputmode="numeric" autocomplete="off">
-            <button class="submit-btn" onclick="checkAnswer()">✅ ثبت پاسخ</button>
-        </div>
-    </div>
+// helpers
+function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 
-    <div class="feedback" id="feedback"></div>
+// sound (WebAudio simple beep)
+const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+function beep(duration=0.06,freq=880,vol=0.05){ if(!soundOn) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); g.gain.value=vol; o.frequency.value=freq; o.start(); setTimeout(()=>{ o.stop(); o.disconnect(); g.disconnect(); }, duration*1000); }
 
-    <div class="game-over" id="gameOver">
-        <div class="game-over-content">
-            <div class="game-over-icon" id="gameOverIcon">🎮</div>
-            <div class="game-over-title" id="gameOverTitle">بازی تمام شد!</div>
+// UI bindings
+document.getElementById('startBtn').addEventListener('click',()=>{ mode = document.getElementById('modeSelect').value; currentLevel = document.getElementById('difficultySelect').value; startGame(); });
+document.getElementById('submitBtn').addEventListener('click', checkAnswer);
+document.getElementById('soundBtn').addEventListener('click', ()=>{ soundOn = !soundOn; document.getElementById('soundBtn').textContent = soundOn? '🔊 صدا روشن' : '🔇 صدا خاموش'; if(soundOn) beep(0.05,1000,0.04); });
+document.getElementById('timeLimitInput').addEventListener('input',(e)=>{ timeLimit = parseInt(e.target.value); document.getElementById('timeLimitValue').textContent = timeLimit; });
+document.getElementById('modeSelect').addEventListener('change', (e)=>{ if(e.target.value==='practice'){ document.getElementById('timeLimitInput').disabled = true; } else { document.getElementById('timeLimitInput').disabled = false; } });
+document.getElementById('clearBoard').addEventListener('click', ()=>{ if(confirm('پاک کردن جدول رتبه‌بندی؟')){ localStorage.removeItem(leaderboardKey); createLeaderboardUI(); } });
 
-            <div id="newMedalAlert" class="new-medal-alert hidden">
-                <div class="new-medal-text">🎉 مدال جدید!</div>
-                <div id="newMedalsList"></div>
-            </div>
+// generate question with guarantee for integer division
+function generateQuestion(){
+  const cfg = levelConfig[currentLevel];
+  const ops = cfg.ops; const op = ops[randInt(0,ops.length-1)];
+  let a,b,ans;
+  if(op==='+'){ a=randInt(cfg.min,cfg.max); b=randInt(1,Math.min(12,cfg.max)); ans=a+b; }
+  else if(op==='-'){ a=randInt(cfg.min,cfg.max); b=randInt(1,Math.min(a-1,12)); ans=a-b; }
+  else if(op==='×'){ a=randInt(cfg.min,Math.min(cfg.max,20)); b=randInt(2,12); ans=a*b; }
+  else { // ÷ -> ensure integer
+    b=randInt(2,12); ans=randInt(1,Math.floor(cfg.max/b)||1); a=ans*b; }
+  currentQuestion={num1:a,num2:b,operation:op,answer:ans};
+  questionEl.textContent = `${a} ${op} ${b} = ?`;
+  explainEl.textContent=''; answerInput.value=''; answerInput.focus();
+  // start per-question timer if in play mode
+  if(mode==='play') startQuestionTimer(timeLimit);
+}
 
-            <div class="final-stats">
-                <div class="stat-row"><span>ارتفاع نهایی:</span><strong id="finalAltitude">0 متر</strong></div>
-                <div class="stat-row"><span>امتیاز کل:</span><strong id="finalScore">0</strong></div>
-                <div class="stat-row"><span>پاسخ درست:</span><strong id="correctAnswers">0</strong></div>
-                <div class="stat-row"><span>پاسخ غلط:</span><strong id="wrongAnswers">0</strong></div>
-            </div>
+function startQuestionTimer(seconds){ clearTimeout(questionTimer); let remaining=seconds; updateQuestionTimerUI(remaining);
+  questionTimer = setInterval(()=>{ remaining--; updateQuestionTimerUI(remaining); if(remaining<=0){ clearInterval(questionTimer); onQuestionTimeout(); } },1000);
+}
+function updateQuestionTimerUI(sec){ document.getElementById('fuelTime').textContent = sec; }
+function onQuestionTimeout(){ // treat as wrong answer
+  feedbackEl.textContent='⌛'; feedbackEl.style.color='#f39c12'; wrongCount++; combo=0; updateStats(); beep(0.06,220,0.04); showExplain(true); adjustFuelOnWrong(); generateQuestion(); setTimeout(()=>feedbackEl.textContent='',500); }
 
-            <div class="buttons-row">
-                <button class="restart-btn" onclick="restartGame()">🔄 دوباره</button>
-                <button class="menu-btn" onclick="backToMenu()">🏠 منو</button>
-            </div>
-        </div>
-    </div>
+function checkAnswer(){ const val = answerInput.value.trim(); if(val==='') return; const user = Number(val); if(isNaN(user)) return; clearInterval(questionTimer);
+  if(user === currentQuestion.answer){ // correct
+    const cfg = levelConfig[currentLevel]; score += (cfg.scoreBase||10) + (combo*2); altitude += 100; correctCount++; combo++; adjustFuelOnCorrect(); feedbackEl.textContent='✅'; feedbackEl.style.color='#2ecc71'; beep(0.04,1200,0.06);
+    // progressive difficulty: every 5 correct increase max by 10 up to cap
+    if(correctCount % 5 === 0 && levelConfig[currentLevel].max < 1000){ levelConfig[currentLevel].max = Math.min(levelConfig[currentLevel].max + 10, 1000); }
+  } else { // wrong
+    wrongCount++; combo=0; feedbackEl.textContent='❌'; feedbackEl.style.color='#e74c3c'; beep(0.08,200,0.06); showExplain(true); adjustFuelOnWrong();
+  }
+  updateStats(); setTimeout(()=>{ feedbackEl.textContent=''; generateQuestion(); }, 500);
+}
 
-    <div class="medal-popup" id="medalPopup">
-        <div class="medal-popup-icon" id="medalPopupIcon">🏅</div>
-        <div class="medal-popup-title" id="medalPopupTitle">مدال جدید!</div>
-        <div class="medal-popup-desc" id="medalPopupDesc">توضیحات مدال</div>
-        <button class="medal-popup-btn" onclick="closeMedalPopup()">عالی! 🎉</button>
-    </div>
+function showExplain(showWrong=false){ if(showWrong){ explainEl.textContent = `پاسخ درست: ${currentQuestion.num1} ${currentQuestion.operation} ${currentQuestion.num2} = ${currentQuestion.answer}`; } else { explainEl.textContent=''; } }
 
-    <script>
-        // --- game state ---
-        let score = 0, altitude = 0, currentFuel = 20, maxFuel = 20;
-        let currentQuestion = {};
-        let fuelTimer = null;
-        let highscore = parseInt(localStorage.getItem('rocketHighScore')) || 0;
-        let currentLevel = 'easy';
-        let correctCount = 0, wrongCount = 0, combo = 0, comboElement = null;
-        let medals = JSON.parse(localStorage.getItem('rocketMedals')) || {};
-        let newMedalsThisGame = [];
+function adjustFuelOnCorrect(){ const cfg = levelConfig[currentLevel]; currentFuel = Math.min(currentFuel + cfg.fuelBonus, maxFuel); }
+function adjustFuelOnWrong(){ const cfg = levelConfig[currentLevel]; maxFuel = Math.max(maxFuel - cfg.fuelPenalty, 6); currentFuel = Math.min(currentFuel, maxFuel); }
 
-        const allMedals = {
-            firstWin: { icon:'🌟', name:'اولین پرواز', desc:'اولین بازی خود را تکمیل کردی', condition:()=> true },
-            altitude100: { icon:'🎯', name:'صد متری', desc:'رسیدن به 100 متر', condition:()=> altitude >= 100 },
-            altitude500: { icon:'🚁', name:'پانصد متری', desc:'رسیدن به 500 متر', condition:()=> altitude >= 500 },
-            altitude1000: { icon:'✈️', name:'هزار متری', desc:'رسیدن به 1000 متر', condition:()=> altitude >= 1000 },
-            combo5: { icon:'🔥', name:'کمبو 5', desc:'5 پاسخ درست پشت سر هم', condition:()=> combo >= 5 },
-            combo10: { icon:'⚡', name:'کمبو 10', desc:'10 پاسخ درست پشت سر هم', condition:()=> combo >= 10 },
-            perfect10: { icon:'💯', name:'کامل', desc:'10 سوال درست بدون غلط', condition:()=> correctCount >= 10 && wrongCount === 0 },
-            hardLevel: { icon:'😎', name:'سخت رو رفتی', desc:'سطح سخت را تکمیل کردی', condition:()=> currentLevel === 'hard' && altitude>0 },
-            expertLevel: { icon:'🏆', name:'استاد', desc:'سطح استاد را تکمیل کردی', condition:()=> currentLevel === 'expert' && altitude>0 },
-            mathGenius: { icon:'🧮', name:'نابغه ریاضی', desc:'50 سوال درست', condition:()=> correctCount >= 50 }
-        };
+function startFuelTimer(){ clearInterval(fuelTimer); fuelTimer = setInterval(()=>{ if(mode==='practice') return; currentFuel--; if(currentFuel<=0){ endGame(); } updateFuelUI(); },1000); }
 
-        const levelConfig = {
-            easy: { name:'آسان 😊', operations:['+','-'], maxNum:20, minNum:1, color:'#2ecc71', initialFuel:30, fuelBonus:8, fuelPenalty:3, scoreBase:10 },
-            medium: { name:'متوسط 🤔', operations:['+','-','×'], maxNum:50, minNum:2, color:'#f39c12', initialFuel:25, fuelBonus:10, fuelPenalty:4, scoreBase:12 },
-            hard: { name:'سخت 😎', operations:['+','-','×','÷'], maxNum:99, minNum:5, color:'#e74c3c', initialFuel:22, fuelBonus:12, fuelPenalty:5, scoreBase:15 },
-            expert: { name:'استاد 🔥', operations:['+','-','×','÷'], maxNum:120, minNum:6, color:'#9b59b6', initialFuel:18, fuelBonus:10, fuelPenalty:6, scoreBase:18, timeLimit:8 }
-        };
+function updateFuelUI(){ const pct = Math.round((currentFuel/maxFuel)*100); fuelFillEl.style.width = pct + '%'; fuelPercentEl.textContent = pct + '%'; scoreEl.textContent = score; altitudeEl.textContent = altitude; }
 
-        // initial UI
-        document.getElementById('menuHighscore').textContent = highscore;
-        document.getElementById('highscore').textContent = highscore;
+function updateStats(){ scoreEl.textContent = score; altitudeEl.textContent = altitude; correctCountEl.textContent = correctCount; wrongCountEl.textContent = wrongCount; comboEl.textContent = combo; fuelTimeEl.textContent = currentFuel; document.getElementById('highscore').textContent = highscore; }
 
-        function createStars(){
-            const starsContainer = document.getElementById('stars');
-            for(let i=0;i<110;i++){
-                const s=document.createElement('div'); s.className='star';
-                s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.animationDelay=Math.random()*3+'s';
-                starsContainer.appendChild(s);
-            }
-            // occasional shooting stars
-            setInterval(()=>{
-                const shooting = document.createElement('div'); shooting.className='shooting-star';
-                shooting.style.left=Math.random()*100+'%'; shooting.style.top=Math.random()*50+'%';
-                starsContainer.appendChild(shooting);
-                setTimeout(()=>shooting.remove(),3000);
-            },8000);
-        }
+function updateRocket(){ const stage = document.getElementById('rocketStage'); const rocket = document.getElementById('rocket'); const maxH = stage.clientHeight - 80; const newB = Math.min((altitude/10), maxH); rocket.style.bottom = newB + 'px'; }
 
-        function createSpaceObjects(){
-            const container=document.getElementById('planets'); container.innerHTML='';
-            const spaceObjects=['🪐','🌍','🌙','☄️','🛸','👽','🌟','💫'];
-            for(let i=0;i<6;i++){
-                const obj=document.createElement('div'); obj.className='space-object'; obj.textContent=spaceObjects[Math.floor(Math.random()*spaceObjects.length)];
-                obj.style.left=(10+Math.random()*80)+'%'; obj.style.top=(10+Math.random()*70)+'%'; obj.style.animationDelay=Math.random()*5+'s'; obj.style.animationDuration=(10+Math.random()*10)+'s';
-                container.appendChild(obj);
-            }
-        }
+function startGame(){ // reset and start
+  score=0; altitude=0; correctCount=0; wrongCount=0; combo=0; currentLevel=document.getElementById('difficultySelect').value;
+  const cfg=levelConfig[currentLevel]; maxFuel = cfg.initialFuel; currentFuel = maxFuel; levelBadge.textContent = cfg.name; document.getElementById('modeSelect').disabled = true; document.getElementById('difficultySelect').disabled=true;
+  mode = document.getElementById('modeSelect').value; saveMode = document.getElementById('saveMode').value;
+  updateStats(); createSpaceVisuals(); generateQuestion(); startFuelTimer();
+}
 
-        function displayMedals(){
-            const grid=document.getElementById('medalsGrid'); grid.innerHTML='';
-            Object.keys(allMedals).forEach(key=>{
-                const m=allMedals[key]; const unlocked = !!medals[key];
-                const div=document.createElement('div'); div.className=`medal-item ${unlocked? 'unlocked':'locked'}`;
-                div.innerHTML=`<div class="medal-icon">${m.icon}</div><div class="medal-name">${m.name}</div>`;
-                div.title = unlocked? m.desc : '🔒 قفل شده'; grid.appendChild(div);
-            });
-        }
+function endGame(){ clearInterval(fuelTimer); clearInterval(questionTimer); // update leaderboard
+  const endTitle = (altitude>highscore)? 'رکورد جدید!':'بازی تمام شد!'; if(altitude>highscore){ highscore = altitude; if(saveMode==='local') localStorage.setItem('rocketHighScore', highscore); }
+  if(saveMode==='local') saveToLeaderboard({score,altitude,correct:correctCount,wrong:wrongCount,when:new Date().toISOString()});
+  // show modal-like simple alert
+  setTimeout(()=>{
+    alert(`${endTitle}\nارتفاع: ${altitude} متر\nامتیاز: ${score}\nصحیح: ${correctCount} | غلط: ${wrongCount}`);
+    document.getElementById('modeSelect').disabled = false; document.getElementById('difficultySelect').disabled=false; createLeaderboardUI();
+  },50);
+}
 
-        function checkMedals(){
-            newMedalsThisGame = [];
-            Object.keys(allMedals).forEach(key=>{
-                if(!medals[key] && allMedals[key].condition()){
-                    medals[key]=true; newMedalsThisGame.push(key); showMedalPopup(key);
-                }
-            });
-            if(newMedalsThisGame.length>0) localStorage.setItem('rocketMedals', JSON.stringify(medals));
-        }
+// leaderboard (local simple)
+function saveToLeaderboard(entry){ if(saveMode!=='local') return; const list = JSON.parse(localStorage.getItem(leaderboardKey)||'[]'); list.push(entry); list.sort((a,b)=> b.altitude - a.altitude); localStorage.setItem(leaderboardKey, JSON.stringify(list.slice(0,20))); }
+function createLeaderboardUI(){ const list = JSON.parse(localStorage.getItem(leaderboardKey)||'[]'); leaderboardEl.innerHTML=''; if(list.length===0){ leaderboardEl.innerHTML = '<li class="small">فعلاً رکوردی ثبت نشده</li>'; return; } list.slice(0,10).forEach((it,idx)=>{ const li=document.createElement('li'); li.className='leader-item'; li.innerHTML = `<span>#${idx+1} — ${it.altitude}m</span><span class="small">امتیاز: ${it.score}</span>`; leaderboardEl.appendChild(li); }); }
 
-        function showMedalPopup(key){
-            const m=allMedals[key]; const popup=document.getElementById('medalPopup');
-            document.getElementById('medalPopupIcon').textContent=m.icon; document.getElementById('medalPopupTitle').textContent=m.name; document.getElementById('medalPopupDesc').textContent=m.desc;
-            popup.classList.add('show');
-            setTimeout(()=>popup.classList.remove('show'),2500);
-        }
-        function closeMedalPopup(){ document.getElementById('medalPopup').classList.remove('show'); }
+// visuals (simple stars/planets)
+function createSpaceVisuals(){ // small visual effect: random background stars
+  const stage=document.getElementById('rocketStage'); stage.style.background = `linear-gradient(180deg,#071226,rgba(0,0,0,0))`; updateRocket(); }
 
-        function startGame(level){
-            currentLevel = level; const config = levelConfig[level];
-            score=0; altitude=0; correctCount=0; wrongCount=0; combo=0; newMedalsThisGame=[];
-            currentFuel = config.initialFuel; maxFuel = config.initialFuel;
-            document.getElementById('menuScreen').classList.add('hidden'); document.getElementById('gameContainer').classList.remove('hidden');
-            document.getElementById('highscore').textContent = highscore;
-            const badge = document.getElementById('levelBadge'); badge.textContent = config.name; badge.style.background = config.color; badge.style.color='white';
-            createSpaceObjects(); updateUI(); generateQuestion(); startFuelTimer();
-        }
+// input enter
+answerInput.addEventListener('keypress',(e)=>{ if(e.key==='Enter') checkAnswer(); });
 
-        function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+// save settings
+document.getElementById('saveMode').addEventListener('change',(e)=>{ saveMode=e.target.value; });
 
-        function generateQuestion(){
-            const config = levelConfig[currentLevel];
-            const ops = config.operations; const op = ops[Math.floor(Math.random()*ops.length)];
-            let a,b,ans;
-            if(op === '+'){
-                a = randInt(config.minNum, config.maxNum);
-                b = randInt(1, Math.min(12, config.maxNum));
-                ans = a + b;
-            } else if(op === '-'){
-                a = randInt(config.minNum, config.maxNum);
-                b = randInt(1, Math.min(a - 1, 12));
-                ans = a - b;
-            } else if(op === '×'){
-                a = randInt(config.minNum, Math.min(config.maxNum, 20));
-                b = randInt(2, 12);
-                ans = a * b;
-            } else { // ÷ -> make divisible
-                b = randInt(2, 12);
-                ans = randInt(1, Math.min(12, Math.floor(config.maxNum / b)));
-                a = ans * b;
-            }
-            currentQuestion = { num1: a, num2: b, operation: op, answer: ans };
-            document.getElementById('question').textContent = `${a} ${op} ${b} = ?`;
-            const input = document.getElementById('answerInput'); input.value=''; input.focus();
-        }
+// small autosave of highscore
+window.addEventListener('beforeunload',()=>{ if(saveMode==='local') localStorage.setItem('rocketHighScore', highscore); });
 
-        function showCombo(){ if(combo>=3){ if(comboElement) comboElement.remove(); comboElement = document.createElement('div'); comboElement.className='combo-badge'; comboElement.textContent=`🔥 کمبو ${combo}`; document.body.appendChild(comboElement); setTimeout(()=>{ if(comboElement){ comboElement.remove(); comboElement=null; } },2000); } }
+// UI show/hide and init values
+document.getElementById('difficultySelect').value = currentLevel;
+document.getElementById('timeLimitValue').textContent = timeLimit;
+updateFuelUI();
 
-        function checkAnswer(){
-            const val = document.getElementById('answerInput').value.trim(); if(val==='') return; const userAnswer = Number(val);
-            if(isNaN(userAnswer)) return;
-            const config = levelConfig[currentLevel];
-            const feedback = document.getElementById('feedback');
-
-            if(userAnswer === currentQuestion.answer){
-                const okIcons = ['✅','🎉','👏','⭐','🌟','💫']; feedback.textContent = okIcons[Math.floor(Math.random()*okIcons.length)]; feedback.style.color = '#2ecc71'; feedback.classList.add('show');
-                score += (config.scoreBase || 10) + (combo*2); altitude += 100; correctCount++; combo++;
-                currentFuel = Math.min(currentFuel + config.fuelBonus, maxFuel);
-                updateRocketPosition(); showCombo(); checkMedals();
-            } else {
-                feedback.textContent = '❌'; feedback.style.color = '#e74c3c'; feedback.classList.add('show');
-                wrongCount++; combo = 0; maxFuel = Math.max(maxFuel - config.fuelPenalty, 6); currentFuel = Math.min(currentFuel, maxFuel);
-                if(comboElement){ comboElement.remove(); comboElement = null; }
-            }
-            setTimeout(()=> feedback.classList.remove('show'),500);
-            updateUI(); generateQuestion();
-        }
-
-        function updateRocketPosition(){ const rocket = document.getElementById('rocket'); const container = document.querySelector('.rocket-container'); const maxHeight = container.offsetHeight - 80; const newBottom = Math.min((altitude/10), maxHeight); rocket.style.bottom = newBottom + 'px'; }
-
-        function updateUI(){ document.getElementById('score').textContent = score; document.getElementById('altitude').textContent = altitude; document.getElementById('fuelTime').textContent = currentFuel; const fuelPercent = Math.max(0, Math.min(100, (currentFuel / maxFuel) * 100)); document.getElementById('fuelFill').style.width = fuelPercent + '%'; document.getElementById('fuelPercent').textContent = Math.round(fuelPercent) + '%'; const fuelFill = document.getElementById('fuelFill'); if(fuelPercent>50) fuelFill.style.background='linear-gradient(90deg,#2ecc71,#27ae60)'; else if(fuelPercent>25) fuelFill.style.background='linear-gradient(90deg,#f39c12,#e67e22)'; else fuelFill.style.background='linear-gradient(90deg,#e74c3c,#c0392b)'; }
-
-        function startFuelTimer(){ clearInterval(fuelTimer); fuelTimer = setInterval(()=>{ currentFuel--; updateUI(); if(currentFuel<=0) endGame(); },1000); }
-
-        function endGame(){ clearInterval(fuelTimer); checkMedals();
-            if(altitude > highscore){ highscore = altitude; localStorage.setItem('rocketHighScore', highscore); document.getElementById('highscore').textContent = highscore; document.getElementById('menuHighscore').textContent = highscore; document.getElementById('gameOverIcon').textContent = '🏆'; document.getElementById('gameOverTitle').textContent = 'رکورد جدید! 🎉'; }
-            else { document.getElementById('gameOverIcon').textContent = '🎮'; document.getElementById('gameOverTitle').textContent = 'بازی تمام شد!'; }
-
-            document.getElementById('finalAltitude').textContent = altitude + ' متر'; document.getElementById('finalScore').textContent = score; document.getElementById('correctAnswers').textContent = correctCount; document.getElementById('wrongAnswers').textContent = wrongCount;
-
-            if(newMedalsThisGame.length>0){ const alert = document.getElementById('newMedalAlert'); alert.classList.remove('hidden'); const list = document.getElementById('newMedalsList'); list.innerHTML=''; newMedalsThisGame.forEach(k=>{ const m = allMedals[k]; const span = document.createElement('span'); span.style.fontSize='clamp(24px,6vw,32px)'; span.style.margin='0 5px'; span.textContent = m.icon; list.appendChild(span); }); }
-            else document.getElementById('newMedalAlert').classList.add('hidden');
-
-            document.getElementById('gameOver').classList.add('show'); displayMedals();
-        }
-
-        function restartGame(){ document.getElementById('gameOver').classList.remove('show'); document.getElementById('rocket').style.bottom='0px'; startGame(currentLevel); }
-
-        function backToMenu(){ clearInterval(fuelTimer); document.getElementById('gameOver').classList.remove('show'); document.getElementById('gameContainer').classList.add('hidden'); document.getElementById('menuScreen').classList.remove('hidden'); document.getElementById('rocket').style.bottom='0px'; if(comboElement){ comboElement.remove(); comboElement=null; } displayMedals(); }
-
-        document.getElementById('answerInput').addEventListener('keypress', function(e){ if(e.key==='Enter') checkAnswer(); });
-
-        // init
-        createStars(); displayMedals();
-
-        // prevent accidental form submission on mobile (Enter behavior)
-        window.addEventListener('keydown', function(e){ if(e.key === 'Enter' && document.activeElement.id !== 'answerInput') e.preventDefault(); });
-    </script>
+</script>
 </body>
 </html>
