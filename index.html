@@ -1,53 +1,0 @@
-
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>🚀 راکت‌مث</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json">
-</head>
-<body>
-  <header>
-    <h1>🚀 راکت‌مث</h1>
-    <div class="theme-toggle">
-      <button id="theme-btn">🪄 تغییر تم</button>
-    </div>
-  </header>
-
-  <main>
-    <div class="game-container">
-      <div class="score-board">
-        <span>امتیاز: <strong id="score">0</strong></span>
-        <span>🏆 بهترین امتیاز: <strong id="highscore">0</strong></span>
-      </div>
-
-      <div class="difficulty">
-        <label for="difficulty">سطح سختی:</label>
-        <select id="difficulty">
-          <option value="easy">آسان</option>
-          <option value="normal" selected>نرمال</option>
-          <option value="hard">سخت</option>
-        </select>
-      </div>
-
-      <div id="question" class="question">
-        <span dir="ltr">1 + 1</span>
-      </div>
-      <input id="answer" type="number" placeholder="جواب..." autocomplete="off" />
-      <button id="check-btn">بررسی 🚀</button>
-
-      <div id="rocket" class="rocket"></div>
-    </div>
-  </main>
-
-  <div id="result-popup" class="popup hidden">
-    <h2>🎉 آفرین!</h2>
-    <p>امتیاز نهایی: <span id="final-score"></span></p>
-    <button id="restart-btn">شروع دوباره</button>
-  </div>
-
-  <script src="script.js"></script>
-</body>
-</html>
