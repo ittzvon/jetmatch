@@ -1,309 +1,220 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>موشک ریاضی — نسخهٔ ۲.۰</title>
-    <style>
-        *{box-sizing:border-box;margin:0;padding:0}
-        html,body{height:100%}
-        body{
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background:linear-gradient(180deg,#071226 0%,#14203a 60%,#1f2636 100%);
-            color:#fff;overflow:hidden;
-        }
-        .wrap{height:100%;display:flex;align-items:center;justify-content:center;padding:20px}
-        .card{width:100%;max-width:980px;background:rgba(255,255,255,0.03);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.6);backdrop-filter:blur(6px)}
-        .header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-        .title{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
-        .controls{display:flex;gap:8px;align-items:center}
-        button,select{cursor:pointer}
-        .btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:10px 12px;border-radius:10px;font-weight:700}
-        .btn.ghost{background:transparent;border:2px solid rgba(255,255,255,0.12)}
-        .main{display:flex;gap:18px;margin-top:18px}
-        .left{flex:1;min-width:280px}
-        .right{width:360px;max-width:360px}
-
-        /* Game panel */
-        .panel{background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(0,0,0,0.03));border-radius:12px;padding:14px}
-        .score-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:12px}
-        .stat{background:rgba(255,255,255,0.03);padding:8px;border-radius:10px;text-align:center;min-width:75px}
-        .stat .label{font-size:12px;color:rgba(255,255,255,0.7)}
-        .stat .value{font-size:18px;font-weight:800}
-        .rocket-area{display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px}
-        .rocket-stage{position:relative;width:100%;height:240px;background:linear-gradient(180deg,#071226,rgba(0,0,0,0));border-radius:12px;overflow:hidden}
-        .rocket{position:absolute;left:50%;transform:translateX(-50%);bottom:0;font-size:56px;transition:bottom .45s cubic-bezier(.2,.9,.2,1)}
-        .fuel-bar{width:100%;height:18px;background:rgba(255,255,255,0.05);border-radius:10px;overflow:hidden;border:2px solid rgba(255,255,255,0.06)}
-        .fuel-fill{height:100%;width:100%;background:linear-gradient(90deg,#2ecc71,#27ae60);transition:width .3s}
-        .fuel-text{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-weight:700}
-
-        .question-box{margin-top:14px}
-        .level-badge{display:inline-block;padding:6px 12px;border-radius:14px;background:rgba(0,0,0,0.15);font-weight:700}
-        .question{background:#fff;padding:14px;border-radius:10px;color:#222;font-weight:800;font-size:28px;text-align:center;margin-top:12px}
-        .answer-row{display:flex;gap:8px;margin-top:12px}
-        .answer-input{flex:1;padding:12px;border-radius:10px;border:2px solid rgba(0,0,0,0.06);font-size:20px;text-align:center}
-        .submit{width:120px}
-        .feedback{height:64px;display:flex;align-items:center;justify-content:center;font-size:38px;margin-top:10px}
-        .explain{margin-top:8px;color:rgba(255,255,255,0.85);font-size:14px}
-
-        /* Right column */
-        .right .panel{margin-bottom:12px}
-        .settings-row{display:flex;flex-direction:column;gap:8px}
-        label{font-size:13px;color:rgba(255,255,255,0.8);margin-bottom:6px}
-        .small{font-size:13px;color:rgba(255,255,255,0.8)}
-        .leaderboard{list-style:none;padding:8px;margin:0}
-        .leader-item{display:flex;justify-content:space-between;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:6px}
-
-        /* responsive */
-        @media (max-width:920px){.main{flex-direction:column}.right{width:100%;max-width:none}}
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بازی ریاضی پیشرفته</title>
+  <style>
+    body {
+      font-family: 'Vazir', sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      direction: rtl;
+    }
+    #game-container {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      width: 450px;
+      text-align: center;
+      transition: background 0.3s ease;
+    }
+    h1 { color: #333; }
+    #question {
+      font-size: 28px;
+      margin: 20px 0;
+      min-height: 50px;
+      transition: color 0.3s ease;
+    }
+    input[type="number"] {
+      padding: 12px;
+      font-size: 20px;
+      width: 65%;
+      text-align: center;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 12px 25px;
+      margin: 10px 5px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover { opacity: 0.85; }
+    #check { background-color: #4CAF50; color: white; }
+    #stop { background-color: #f44336; color: white; }
+    #start { background-color: #2196F3; color: white; }
+    #menu {
+      margin-top: 15px;
+      text-align: center;
+    }
+    #menu label { margin: 0 5px; font-size: 14px; }
+    #score { margin-top: 10px; font-size: 18px; color: #555; }
+    #timer {
+      font-size: 18px;
+      margin-top: 5px;
+      color: #555;
+    }
+    .flash {
+      animation: flashBG 0.5s;
+    }
+    @keyframes flashBG {
+      0% { background-color: #fff; }
+      50% { background-color: #c8e6c9; }
+      100% { background-color: #fff; }
+    }
+    .flash-wrong {
+      animation: flashWrong 0.5s;
+    }
+    @keyframes flashWrong {
+      0% { background-color: #fff; }
+      50% { background-color: #ffcdd2; }
+      100% { background-color: #fff; }
+    }
+  </style>
 </head>
 <body>
-    <div class="wrap">
-        <div class="card">
-            <div class="header">
-                <div class="title">🚀 موشک ریاضی — نسخهٔ ۲.۰</div>
-                <div class="controls">
-                    <select id="modeSelect" class="ghost">
-                        <option value="play">🎮 بازی (چالش)</option>
-                        <option value="practice">🧪 تمرین آزاد</option>
-                    </select>
-                    <select id="difficultySelect" class="ghost">
-                        <option value="easy">آسان</option>
-                        <option value="medium">متوسط</option>
-                        <option value="hard">سخت</option>
-                        <option value="expert">استاد</option>
-                    </select>
-                    <button id="startBtn" class="btn">▶ شروع</button>
-                    <button id="soundBtn" class="btn ghost">🔊 صدا روشن</button>
-                </div>
-            </div>
-
-            <div class="main">
-                <div class="left">
-                    <div class="panel">
-                        <div class="score-row">
-                            <div class="stat"><div class="label">امتیاز</div><div class="value" id="score">0</div></div>
-                            <div class="stat"><div class="label">ارتفاع</div><div class="value" id="altitude">0</div></div>
-                            <div class="stat"><div class="label">سوخت</div><div class="value" id="fuelTime">0</div></div>
-                            <div class="stat"><div class="label">رکورد</div><div class="value" id="highscore">0</div></div>
-                        </div>
-
-                        <div class="rocket-area">
-                            <div class="rocket-stage" id="rocketStage">
-                                <div id="rocket" class="rocket">🚀</div>
-                            </div>
-
-                            <div style="width:100%">
-                                <div class="fuel-bar" style="position:relative">
-                                    <div id="fuelFill" class="fuel-fill"></div>
-                                    <div class="fuel-text" id="fuelPercent">100%</div>
-                                </div>
-                            </div>
-
-                            <div class="question-box">
-                                <div class="level-badge" id="levelBadge">آسان</div>
-                                <div class="question" id="question">—</div>
-
-                                <div class="answer-row">
-                                    <input id="answerInput" class="answer-input" inputmode="numeric" autocomplete="off" placeholder="پاسخ را وارد کن">
-                                    <button id="submitBtn" class="btn submit">ثبت</button>
-                                </div>
-
-                                <div class="feedback" id="feedback"></div>
-                                <div class="explain" id="explain"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="panel" style="margin-top:12px">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>آمار بازی</strong><small class="small">۶۰ ثانیه پس از پایان نمایش داده می‌شود</small></div>
-                        <div class="small">پاسخ درست: <span id="correctCount">0</span></div>
-                        <div class="small">پاسخ غلط: <span id="wrongCount">0</span></div>
-                        <div class="small">کمبو فعلی: <span id="combo">0</span></div>
-                    </div>
-                </div>
-
-                <div class="right">
-                    <div class="panel">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>تنظیمات</strong></div>
-                        <div class="settings-row">
-                            <div>
-                                <label>زمان هر سؤال (ثانیه)</label>
-                                <input id="timeLimitInput" type="range" min="4" max="20" value="10">
-                                <div class="small">مقدار: <span id="timeLimitValue">10</span>s</div>
-                            </div>
-
-                            <div>
-                                <label>فعال‌سازی صدا</label>
-                            </div>
-
-                            <div>
-                                <label>ذخیرهٔ رکورد‌ها</label>
-                                <select id="saveMode">
-                                    <option value="local">LocalStorage</option>
-                                    <option value="none">خاموش</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="panel">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>جدول رتبه‌بندی</strong><button id="clearBoard" class="btn ghost">پاک‌سازی</button></div>
-                        <ul id="leaderboard" class="leaderboard"></ul>
-                    </div>
-
-                    <div class="panel">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>راهنما</strong></div>
-                        <div class="small">• برای سن ۱۱–۱۲ سال مناسب است.<br>• در حالت تمرین محدودیت زمان وجود ندارد.<br>• در صورت پاسخ اشتباه، پاسخ درست نشان داده می‌شود.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div id="game-container">
+    <h1>بازی ریاضی پیشرفته</h1>
+    <div id="question">برای شروع دکمه شروع را بزن!</div>
+    <input type="number" id="answer" placeholder="جواب" />
+    <div>
+      <button id="check">بررسی</button>
+      <button id="start">شروع</button>
+      <button id="stop">استپ</button>
     </div>
+    <div id="score">امتیاز: 0</div>
+    <div id="timer">زمان: 15 ثانیه</div>
+    <div id="menu">
+      <label><input type="checkbox" id="add" checked> جمع</label>
+      <label><input type="checkbox" id="sub" checked> تفریق</label>
+      <label><input type="checkbox" id="mul" checked> ضرب</label>
+      <label><input type="checkbox" id="div" checked> تقسیم</label>
+    </div>
+  </div>
 
-<script>
-// --- state ---
-let score=0, altitude=0, currentFuel=20, maxFuel=20;
-let currentQuestion={}, fuelTimer=null, questionTimer=null;
-let highscore = parseInt(localStorage.getItem('rocketHighScore'))||0;
-let currentLevel='easy', correctCount=0, wrongCount=0, combo=0;
-let soundOn=true, mode='play';
-let saveMode='local';
-let timeLimit=10; // seconds per question
-let leaderboardKey='rocketLeaderboard_v2';
+  <script>
+    const questionEl = document.getElementById('question');
+    const answerEl = document.getElementById('answer');
+    const checkBtn = document.getElementById('check');
+    const startBtn = document.getElementById('start');
+    const stopBtn = document.getElementById('stop');
+    const scoreEl = document.getElementById('score');
+    const timerEl = document.getElementById('timer');
+    const gameContainer = document.getElementById('game-container');
 
-const levelConfig = {
-  easy:{name:'آسان',ops:['+','-'],min:1,max:20,initialFuel:30,fuelBonus:6,fuelPenalty:2,scoreBase:10},
-  medium:{name:'متوسط',ops:['+','-','×'],min:2,max:50,initialFuel:25,fuelBonus:8,fuelPenalty:3,scoreBase:12},
-  hard:{name:'سخت',ops:['+','-','×','÷'],min:5,max:99,initialFuel:22,fuelBonus:10,fuelPenalty:4,scoreBase:15},
-  expert:{name:'استاد',ops:['+','-','×','÷'],min:6,max:140,initialFuel:18,fuelBonus:8,fuelPenalty:6,scoreBase:18}
-};
+    let score = 0;
+    let currentAnswer = 0;
+    let gameActive = false;
+    let timeLeft = 15;
+    let timerInterval;
 
-// UI refs
-const scoreEl=document.getElementById('score');
-const altitudeEl=document.getElementById('altitude');
-const fuelTimeEl=document.getElementById('fuelTime');
-const fuelFillEl=document.getElementById('fuelFill');
-const fuelPercentEl=document.getElementById('fuelPercent');
-const questionEl=document.getElementById('question');
-const levelBadge=document.getElementById('levelBadge');
-const answerInput=document.getElementById('answerInput');
-const feedbackEl=document.getElementById('feedback');
-const explainEl=document.getElementById('explain');
-const highscoreEl=document.getElementById('highscore');
-const correctCountEl=document.getElementById('correctCount');
-const wrongCountEl=document.getElementById('wrongCount');
-const comboEl=document.getElementById('combo');
-const leaderboardEl=document.getElementById('leaderboard');
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
-// init
-highscoreEl.textContent = highscore;
-createLeaderboardUI();
+    function generateQuestion() {
+      const operations = [];
+      if(document.getElementById('add').checked) operations.push('+');
+      if(document.getElementById('sub').checked) operations.push('-');
+      if(document.getElementById('mul').checked) operations.push('*');
+      if(document.getElementById('div').checked) operations.push('/');
 
-// helpers
-function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min}
-function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+      if(operations.length === 0) return null;
 
-// sound (WebAudio simple beep)
-const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-function beep(duration=0.06,freq=880,vol=0.05){ if(!soundOn) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); g.gain.value=vol; o.frequency.value=freq; o.start(); setTimeout(()=>{ o.stop(); o.disconnect(); g.disconnect(); }, duration*1000); }
+      const op1 = operations[randomInt(0, operations.length-1)];
+      const op2 = operations[randomInt(0, operations.length-1)];
 
-// UI bindings
-document.getElementById('startBtn').addEventListener('click',()=>{ mode = document.getElementById('modeSelect').value; currentLevel = document.getElementById('difficultySelect').value; startGame(); });
-document.getElementById('submitBtn').addEventListener('click', checkAnswer);
-document.getElementById('soundBtn').addEventListener('click', ()=>{ soundOn = !soundOn; document.getElementById('soundBtn').textContent = soundOn? '🔊 صدا روشن' : '🔇 صدا خاموش'; if(soundOn) beep(0.05,1000,0.04); });
-document.getElementById('timeLimitInput').addEventListener('input',(e)=>{ timeLimit = parseInt(e.target.value); document.getElementById('timeLimitValue').textContent = timeLimit; });
-document.getElementById('modeSelect').addEventListener('change', (e)=>{ if(e.target.value==='practice'){ document.getElementById('timeLimitInput').disabled = true; } else { document.getElementById('timeLimitInput').disabled = false; } });
-document.getElementById('clearBoard').addEventListener('click', ()=>{ if(confirm('پاک کردن جدول رتبه‌بندی؟')){ localStorage.removeItem(leaderboardKey); createLeaderboardUI(); } });
+      let nums = [randomInt(1,20), randomInt(1,20), randomInt(1,20)];
+      if(op1 === '/') nums[1] = randomInt(1,10);
+      if(op2 === '/') nums[2] = randomInt(1,10);
 
-// generate question with guarantee for integer division
-function generateQuestion(){
-  const cfg = levelConfig[currentLevel];
-  const ops = cfg.ops; const op = ops[randInt(0,ops.length-1)];
-  let a,b,ans;
-  if(op==='+'){ a=randInt(cfg.min,cfg.max); b=randInt(1,Math.min(12,cfg.max)); ans=a+b; }
-  else if(op==='-'){ a=randInt(cfg.min,cfg.max); b=randInt(1,Math.min(a-1,12)); ans=a-b; }
-  else if(op==='×'){ a=randInt(cfg.min,Math.min(cfg.max,20)); b=randInt(2,12); ans=a*b; }
-  else { // ÷ -> ensure integer
-    b=randInt(2,12); ans=randInt(1,Math.floor(cfg.max/b)||1); a=ans*b; }
-  currentQuestion={num1:a,num2:b,operation:op,answer:ans};
-  questionEl.textContent = `${a} ${op} ${b} = ?`;
-  explainEl.textContent=''; answerInput.value=''; answerInput.focus();
-  // start per-question timer if in play mode
-  if(mode==='play') startQuestionTimer(timeLimit);
-}
+      const questionStr = `${nums[0]} ${op1} ${nums[1]} ${op2} ${nums[2]}`;
 
-function startQuestionTimer(seconds){ clearTimeout(questionTimer); let remaining=seconds; updateQuestionTimerUI(remaining);
-  questionTimer = setInterval(()=>{ remaining--; updateQuestionTimerUI(remaining); if(remaining<=0){ clearInterval(questionTimer); onQuestionTimeout(); } },1000);
-}
-function updateQuestionTimerUI(sec){ document.getElementById('fuelTime').textContent = sec; }
-function onQuestionTimeout(){ // treat as wrong answer
-  feedbackEl.textContent='⌛'; feedbackEl.style.color='#f39c12'; wrongCount++; combo=0; updateStats(); beep(0.06,220,0.04); showExplain(true); adjustFuelOnWrong(); generateQuestion(); setTimeout(()=>feedbackEl.textContent='',500); }
+      // محاسبه چپ به راست
+      let answer = nums[0];
+      const ops = [op1, op2];
+      for(let i=0; i<ops.length; i++){
+        if(ops[i] === '+') answer += nums[i+1];
+        else if(ops[i] === '-') answer -= nums[i+1];
+        else if(ops[i] === '*') answer *= nums[i+1];
+        else if(ops[i] === '/') answer = Math.floor(answer / nums[i+1]);
+      }
 
-function checkAnswer(){ const val = answerInput.value.trim(); if(val==='') return; const user = Number(val); if(isNaN(user)) return; clearInterval(questionTimer);
-  if(user === currentQuestion.answer){ // correct
-    const cfg = levelConfig[currentLevel]; score += (cfg.scoreBase||10) + (combo*2); altitude += 100; correctCount++; combo++; adjustFuelOnCorrect(); feedbackEl.textContent='✅'; feedbackEl.style.color='#2ecc71'; beep(0.04,1200,0.06);
-    // progressive difficulty: every 5 correct increase max by 10 up to cap
-    if(correctCount % 5 === 0 && levelConfig[currentLevel].max < 1000){ levelConfig[currentLevel].max = Math.min(levelConfig[currentLevel].max + 10, 1000); }
-  } else { // wrong
-    wrongCount++; combo=0; feedbackEl.textContent='❌'; feedbackEl.style.color='#e74c3c'; beep(0.08,200,0.06); showExplain(true); adjustFuelOnWrong();
-  }
-  updateStats(); setTimeout(()=>{ feedbackEl.textContent=''; generateQuestion(); }, 500);
-}
+      currentAnswer = answer;
+      questionEl.textContent = questionStr.replace(/\d+/g, n => n.toLocaleString('fa'));
+    }
 
-function showExplain(showWrong=false){ if(showWrong){ explainEl.textContent = `پاسخ درست: ${currentQuestion.num1} ${currentQuestion.operation} ${currentQuestion.num2} = ${currentQuestion.answer}`; } else { explainEl.textContent=''; } }
+    function startTimer() {
+      clearInterval(timerInterval);
+      timeLeft = 15;
+      timerEl.textContent = `زمان: ${timeLeft} ثانیه`;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = `زمان: ${timeLeft} ثانیه`;
+        if(timeLeft <= 0){
+          clearInterval(timerInterval);
+          flashWrong();
+          generateQuestion();
+          startTimer();
+        }
+      }, 1000);
+    }
 
-function adjustFuelOnCorrect(){ const cfg = levelConfig[currentLevel]; currentFuel = Math.min(currentFuel + cfg.fuelBonus, maxFuel); }
-function adjustFuelOnWrong(){ const cfg = levelConfig[currentLevel]; maxFuel = Math.max(maxFuel - cfg.fuelPenalty, 6); currentFuel = Math.min(currentFuel, maxFuel); }
+    function flashCorrect() {
+      gameContainer.classList.add('flash');
+      setTimeout(()=> gameContainer.classList.remove('flash'), 500);
+    }
 
-function startFuelTimer(){ clearInterval(fuelTimer); fuelTimer = setInterval(()=>{ if(mode==='practice') return; currentFuel--; if(currentFuel<=0){ endGame(); } updateFuelUI(); },1000); }
+    function flashWrong() {
+      gameContainer.classList.add('flash-wrong');
+      setTimeout(()=> gameContainer.classList.remove('flash-wrong'), 500);
+    }
 
-function updateFuelUI(){ const pct = Math.round((currentFuel/maxFuel)*100); fuelFillEl.style.width = pct + '%'; fuelPercentEl.textContent = pct + '%'; scoreEl.textContent = score; altitudeEl.textContent = altitude; }
+    function startGame() {
+      gameActive = true;
+      score = 0;
+      scoreEl.textContent = 'امتیاز: ' + score;
+      generateQuestion();
+      startTimer();
+    }
 
-function updateStats(){ scoreEl.textContent = score; altitudeEl.textContent = altitude; correctCountEl.textContent = correctCount; wrongCountEl.textContent = wrongCount; comboEl.textContent = combo; fuelTimeEl.textContent = currentFuel; document.getElementById('highscore').textContent = highscore; }
+    function stopGame() {
+      gameActive = false;
+      clearInterval(timerInterval);
+      questionEl.textContent = 'بازی متوقف شد!';
+    }
 
-function updateRocket(){ const stage = document.getElementById('rocketStage'); const rocket = document.getElementById('rocket'); const maxH = stage.clientHeight - 80; const newB = Math.min((altitude/10), maxH); rocket.style.bottom = newB + 'px'; }
+    checkBtn.addEventListener('click', () => {
+      if(!gameActive) return;
+      const userAnswer = parseInt(answerEl.value);
+      if(userAnswer === currentAnswer){
+        score++;
+        scoreEl.textContent = 'امتیاز: ' + score;
+        flashCorrect();
+      } else {
+        flashWrong();
+      }
+      answerEl.value = '';
+      generateQuestion();
+      startTimer();
+    });
 
-function startGame(){ // reset and start
-  score=0; altitude=0; correctCount=0; wrongCount=0; combo=0; currentLevel=document.getElementById('difficultySelect').value;
-  const cfg=levelConfig[currentLevel]; maxFuel = cfg.initialFuel; currentFuel = maxFuel; levelBadge.textContent = cfg.name; document.getElementById('modeSelect').disabled = true; document.getElementById('difficultySelect').disabled=true;
-  mode = document.getElementById('modeSelect').value; saveMode = document.getElementById('saveMode').value;
-  updateStats(); createSpaceVisuals(); generateQuestion(); startFuelTimer();
-}
+    startBtn.addEventListener('click', startGame);
+    stopBtn.addEventListener('click', stopGame);
 
-function endGame(){ clearInterval(fuelTimer); clearInterval(questionTimer); // update leaderboard
-  const endTitle = (altitude>highscore)? 'رکورد جدید!':'بازی تمام شد!'; if(altitude>highscore){ highscore = altitude; if(saveMode==='local') localStorage.setItem('rocketHighScore', highscore); }
-  if(saveMode==='local') saveToLeaderboard({score,altitude,correct:correctCount,wrong:wrongCount,when:new Date().toISOString()});
-  // show modal-like simple alert
-  setTimeout(()=>{
-    alert(`${endTitle}\nارتفاع: ${altitude} متر\nامتیاز: ${score}\nصحیح: ${correctCount} | غلط: ${wrongCount}`);
-    document.getElementById('modeSelect').disabled = false; document.getElementById('difficultySelect').disabled=false; createLeaderboardUI();
-  },50);
-}
-
-// leaderboard (local simple)
-function saveToLeaderboard(entry){ if(saveMode!=='local') return; const list = JSON.parse(localStorage.getItem(leaderboardKey)||'[]'); list.push(entry); list.sort((a,b)=> b.altitude - a.altitude); localStorage.setItem(leaderboardKey, JSON.stringify(list.slice(0,20))); }
-function createLeaderboardUI(){ const list = JSON.parse(localStorage.getItem(leaderboardKey)||'[]'); leaderboardEl.innerHTML=''; if(list.length===0){ leaderboardEl.innerHTML = '<li class="small">فعلاً رکوردی ثبت نشده</li>'; return; } list.slice(0,10).forEach((it,idx)=>{ const li=document.createElement('li'); li.className='leader-item'; li.innerHTML = `<span>#${idx+1} — ${it.altitude}m</span><span class="small">امتیاز: ${it.score}</span>`; leaderboardEl.appendChild(li); }); }
-
-// visuals (simple stars/planets)
-function createSpaceVisuals(){ // small visual effect: random background stars
-  const stage=document.getElementById('rocketStage'); stage.style.background = `linear-gradient(180deg,#071226,rgba(0,0,0,0))`; updateRocket(); }
-
-// input enter
-answerInput.addEventListener('keypress',(e)=>{ if(e.key==='Enter') checkAnswer(); });
-
-// save settings
-document.getElementById('saveMode').addEventListener('change',(e)=>{ saveMode=e.target.value; });
-
-// small autosave of highscore
-window.addEventListener('beforeunload',()=>{ if(saveMode==='local') localStorage.setItem('rocketHighScore', highscore); });
-
-// UI show/hide and init values
-document.getElementById('difficultySelect').value = currentLevel;
-document.getElementById('timeLimitValue').textContent = timeLimit;
-updateFuelUI();
-
-</script>
+    answerEl.addEventListener('keyup', e => {
+      if(e.key === 'Enter') checkBtn.click();
+    });
+  </script>
 </body>
 </html>
