@@ -1,0 +1,10 @@
+
+{
+  "name": "Rocket Math",
+  "short_name": "RocketMath",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4caf50",
+  "icons": []
+}
