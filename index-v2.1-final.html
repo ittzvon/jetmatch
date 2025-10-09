@@ -1,0 +1,3809 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#0a0e27">
+    <meta name="description" content="بازی آموزشی ریاضی - موشک فضایی">
+    <title>🚀 بازی موشک ریاضی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        body {
+            background: #0a0e27;
+            background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 50%, #2a1f3a 100%);
+            position: relative;
+        }
+        
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            user-select: text;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .ltr-content {
+            direction: ltr !important;
+            unicode-bidi: bidi-override;
+        }
+        
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .space-object {
+            position: absolute;
+            font-size: clamp(20px, 4vw, 30px);
+            animation: floatSpace 15s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes floatSpace {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, -30px) rotate(90deg); }
+            50% { transform: translate(-20px, 20px) rotate(180deg); }
+            75% { transform: translate(20px, 30px) rotate(270deg); }
+        }
+        
+        .main-menu,
+        .level-select-screen,
+        .settings-screen,
+        .shop-screen,
+        .stats-screen,
+        .medals-screen,
+        .tutorial-screen {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            z-index: 100;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+        
+        .menu-container,
+        .level-select-container,
+        .settings-container,
+        .shop-container,
+        .stats-container,
+        .medals-container,
+        .tutorial-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: clamp(25px, 5vw, 40px);
+            max-width: 600px;
+            width: 100%;
+            margin: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .game-logo {
+            font-size: clamp(36px, 8vw, 52px);
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .game-subtitle {
+            font-size: clamp(15px, 3.5vw, 18px);
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .rocket-animation {
+            font-size: clamp(60px, 12vw, 80px);
+            margin: 20px 0;
+            animation: floatRocket 3s ease-in-out infinite;
+            display: block;
+            text-align: center;
+        }
+        
+        @keyframes floatRocket {
+            0%, 100% { transform: translateY(0px) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .streak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: clamp(15px, 3.5vw, 18px);
+            margin: 20px auto;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            animation: streakPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes streakPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .streak-number {
+            font-size: clamp(20px, 4.5vw, 26px);
+            font-weight: bold;
+        }
+        
+        .main-menu-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .menu-btn {
+            background: white;
+            border: 3px solid #3498db;
+            padding: clamp(18px, 4vw, 25px);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(14px, 3vw, 16px);
+            font-weight: bold;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-height: 100px;
+        }
+        
+        .menu-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .menu-btn:active {
+            transform: translateY(0);
+        }
+        
+        .menu-btn-icon {
+            font-size: clamp(32px, 7vw, 42px);
+        }
+        
+        .menu-btn-title {
+            font-size: clamp(15px, 3.5vw, 18px);
+        }
+        
+        .menu-btn.primary {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .menu-btn.success {
+            border-color: #2ecc71;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+        
+        .menu-btn.warning {
+            border-color: #f39c12;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        }
+        
+        .menu-btn.info {
+            border-color: #3498db;
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        }
+        
+        .menu-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .menu-stat-item {
+            text-align: center;
+        }
+        
+        .menu-stat-icon {
+            font-size: clamp(24px, 5vw, 32px);
+            margin-bottom: 8px;
+        }
+        
+        .menu-stat-value {
+            font-size: clamp(18px, 4vw, 24px);
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .menu-stat-label {
+            font-size: clamp(11px, 2.5vw, 13px);
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .screen-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+        
+        .back-button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .back-button:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+        
+        .back-button:active {
+            transform: scale(0.95);
+        }
+        
+        .screen-title {
+            font-size: clamp(22px, 5vw, 30px);
+            font-weight: bold;
+            color: #2c3e50;
+            flex: 1;
+        }
+        
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .level-card {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .level-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .level-card.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 22px;
+        }
+        
+        .level-card-icon {
+            font-size: clamp(40px, 8vw, 55px);
+            margin-bottom: 12px;
+        }
+        
+        .level-card-name {
+            font-size: clamp(17px, 4vw, 21px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .level-card-desc {
+            font-size: clamp(12px, 2.5vw, 14px);
+            color: #7f8c8d;
+            margin-bottom: 12px;
+        }
+        
+        .level-card-reward {
+            background: #ffd700;
+            color: #2c3e50;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: clamp(12px, 2.5vw, 14px);
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .level-card.normal { border-color: #3498db; }
+        .level-card.night { border-color: #34495e; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; }
+        .level-card.challenge { border-color: #e74c3c; background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); }
+        .level-card.timed { border-color: #f39c12; background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); }
+        .level-card.infinite { border-color: #2ecc71; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); }
+        .level-card.hell { border-color: #8b0000; background: linear-gradient(135deg, #1a0000 0%, #8b0000 100%); color: white; }
+        
+        .level-card.night .level-card-name,
+        .level-card.night .level-card-desc,
+        .level-card.hell .level-card-name,
+        .level-card.hell .level-card-desc {
+            color: white;
+        }
+        
+        .settings-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .settings-section-title {
+            font-size: clamp(17px, 4vw, 21px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 12px;
+        }
+        
+        .checkbox-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .checkbox-item:hover {
+            border-color: #3498db;
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.2);
+        }
+        
+        .checkbox-item.checked {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .checkbox-item.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .checkbox-icon {
+            font-size: clamp(28px, 6vw, 36px);
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-label {
+            font-size: clamp(13px, 3vw, 16px);
+            font-weight: bold;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .radio-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .radio-item:hover {
+            border-color: #3498db;
+        }
+        
+        .radio-item.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+        
+        .radio-circle {
+            width: 26px;
+            height: 26px;
+            border: 3px solid #e0e0e0;
+            border-radius: 50%;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        
+        .radio-item.selected .radio-circle {
+            border-color: #667eea;
+            background: #667eea;
+            box-shadow: inset 0 0 0 5px white;
+        }
+        
+        .radio-content {
+            flex: 1;
+        }
+        
+        .radio-title {
+            font-size: clamp(14px, 3.5vw, 17px);
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .radio-desc {
+            font-size: clamp(12px, 2.5vw, 14px);
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .save-button {
+            width: 100%;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            padding: clamp(18px, 4vw, 22px);
+            border-radius: 12px;
+            font-size: clamp(17px, 4vw, 21px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 25px;
+        }
+        
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+        }
+        
+        .save-button:active {
+            transform: translateY(0);
+        }
+
+        .shop-balance {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .shop-balance-amount {
+            font-size: clamp(28px, 6vw, 40px);
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .shop-balance-label {
+            font-size: clamp(13px, 3vw, 15px);
+            color: #7f8c8d;
+            margin-top: 8px;
+        }
+        
+        .shop-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 10px;
+        }
+        
+        .shop-tab {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 12px 22px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: clamp(13px, 3vw, 16px);
+            font-weight: bold;
+            color: #7f8c8d;
+            flex-shrink: 0;
+        }
+        
+        .shop-tab:hover {
+            border-color: #3498db;
+        }
+        
+        .shop-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .shop-item {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .shop-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .shop-item.owned {
+            border-color: #2ecc71;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(39, 174, 96, 0.1) 100%);
+        }
+        
+        .shop-item.equipped {
+            border-color: #3498db;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(41, 128, 185, 0.2) 100%);
+        }
+        
+        .shop-item.locked {
+            opacity: 0.6;
+        }
+        
+        .shop-item-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #2ecc71;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: clamp(10px, 2vw, 12px);
+            font-weight: bold;
+        }
+        
+        .shop-item.equipped .shop-item-badge {
+            background: #3498db;
+        }
+        
+        .shop-item-icon {
+            font-size: clamp(45px, 10vw, 65px);
+            margin: 12px 0;
+        }
+        
+        .shop-item-name {
+            font-size: clamp(14px, 3vw, 17px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .shop-item-price {
+            background: #ffd700;
+            color: #2c3e50;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: clamp(13px, 3vw, 15px);
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .shop-item.owned .shop-item-price {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .shop-item-lock {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 22px;
+        }
+        
+        .purchase-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        
+        .purchase-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: clamp(30px, 6vw, 45px);
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            animation: modalPop 0.3s ease;
+        }
+        
+        @keyframes modalPop {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .purchase-modal-icon {
+            font-size: clamp(70px, 15vw, 90px);
+            margin-bottom: 20px;
+        }
+        
+        .purchase-modal-title {
+            font-size: clamp(22px, 5vw, 28px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        
+        .purchase-modal-desc {
+            font-size: clamp(14px, 3vw, 16px);
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+        
+        .purchase-modal-price {
+            background: #ffd700;
+            color: #2c3e50;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: clamp(20px, 4vw, 26px);
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 25px;
+        }
+        
+        .purchase-modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .purchase-btn {
+            flex: 1;
+            padding: clamp(15px, 3vw, 18px);
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(15px, 3.5vw, 18px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .purchase-btn.confirm {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+        }
+        
+        .purchase-btn.cancel {
+            background: #e0e0e0;
+            color: #7f8c8d;
+        }
+        
+        .purchase-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .purchase-btn:active {
+            transform: translateY(0);
+        }
+        
+        .purchase-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .stats-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 22px;
+            margin: 20px 0;
+        }
+        
+        .stats-card-title {
+            font-size: clamp(17px, 4vw, 22px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .stat-box-icon {
+            font-size: clamp(28px, 6vw, 36px);
+            margin-bottom: 10px;
+        }
+        
+        .stat-box-value {
+            font-size: clamp(22px, 5vw, 30px);
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 8px;
+        }
+        
+        .stat-box-label {
+            font-size: clamp(12px, 2.5vw, 14px);
+            color: #7f8c8d;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            height: 35px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: clamp(13px, 3vw, 16px);
+        }
+        
+        .medals-category {
+            margin: 25px 0;
+        }
+        
+        .medals-category-title {
+            font-size: clamp(19px, 4.5vw, 26px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .medals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+            gap: 15px;
+        }
+        
+        .medal-card {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 18px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .medal-card.unlocked {
+            border-color: #ffd700;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+            animation: medalGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes medalGlow {
+            0%, 100% { box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6); }
+        }
+        
+        .medal-card.locked {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+        
+        .medal-card-icon {
+            font-size: clamp(45px, 10vw, 65px);
+            margin: 12px 0;
+        }
+        
+        .medal-card-name {
+            font-size: clamp(14px, 3vw, 17px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .medal-card-desc {
+            font-size: clamp(12px, 2.5vw, 14px);
+            color: #7f8c8d;
+        }
+        
+        .tutorial-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .tutorial-tab {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 12px 22px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: clamp(13px, 3vw, 16px);
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .tutorial-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .tutorial-content {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+        }
+        
+        .multiplication-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .table-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .table-item:hover {
+            border-color: #3498db;
+            transform: scale(1.05);
+        }
+        
+        .table-item-question {
+            font-size: clamp(13px, 3vw, 15px);
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            direction: ltr;
+        }
+        
+        .table-item-answer {
+            font-size: clamp(18px, 4vw, 22px);
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .tips-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .tip-item {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 12px 0;
+            border-left: 5px solid #3498db;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+        
+        .tip-icon {
+            font-size: 26px;
+            flex-shrink: 0;
+        }
+        
+        .tip-text {
+            font-size: clamp(14px, 3vw, 16px);
+            color: #2c3e50;
+            line-height: 1.7;
+        }
+        
+        .game-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+            overflow: hidden;
+            touch-action: none;
+        }
+        
+        .game-header {
+            width: 100%;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            z-index: 10;
+        }
+        
+        .game-back-btn {
+            background: rgba(231, 76, 60, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .game-back-btn:hover {
+            background: rgba(192, 57, 43, 0.95);
+            transform: scale(1.05);
+        }
+        
+        .game-stats-bar {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 12px 20px;
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        
+        .game-stat {
+            text-align: center;
+            min-width: 70px;
+        }
+        
+        .game-stat-label {
+            font-size: clamp(11px, 2.5vw, 13px);
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 5px;
+        }
+        
+        .game-stat-value {
+            font-size: clamp(18px, 4vw, 24px);
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .game-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .powerups-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 12px 0;
+            flex-wrap: wrap;
+        }
+        
+        .powerup-btn {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: clamp(13px, 3vw, 15px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .powerup-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4);
+        }
+        
+        .powerup-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .powerup-icon {
+            font-size: clamp(18px, 4vw, 22px);
+        }
+        
+        .rocket-area {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: clamp(220px, 35vh, 400px);
+            margin: 15px 0;
+        }
+        
+        .space-objects {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .rocket {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: clamp(55px, 12vw, 85px);
+            transition: bottom 0.5s ease;
+            filter: drop-shadow(0 0 20px rgba(255, 100, 100, 0.6));
+            z-index: 5;
+        }
+        
+        .rocket-fire {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: clamp(40px, 9vw, 55px);
+            animation: fireFlicker 0.1s infinite;
+        }
+        
+        @keyframes fireFlicker {
+            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.8; transform: translateX(-50%) scale(1.15); }
+        }
+        
+        .fuel-container {
+            width: 100%;
+            max-width: 550px;
+            margin: 15px 0;
+            padding: 0 15px;
+        }
+        
+        .fuel-label {
+            color: white;
+            text-align: center;
+            margin-bottom: 12px;
+            font-size: clamp(15px, 3.5vw, 19px);
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .fuel-bar {
+            width: 100%;
+            height: clamp(40px, 7vw, 50px);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            border-radius: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .fuel-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            transition: width 0.3s ease, background 0.3s ease;
+            border-radius: 25px;
+            box-shadow: 0 0 25px rgba(46, 204, 113, 0.6);
+        }
+        
+        .fuel-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: clamp(14px, 3vw, 17px);
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+            z-index: 1;
+        }
+        
+        .question-box {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: clamp(22px, 4vw, 32px);
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            margin: 15px;
+        }
+        
+        .level-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: clamp(13px, 3vw, 15px);
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .question-text {
+            font-size: clamp(36px, 8vw, 52px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 22px;
+            direction: ltr !important;
+            font-family: 'Courier New', monospace !important;
+            letter-spacing: 4px;
+            unicode-bidi: bidi-override;
+            text-align: center;
+            display: block;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: clamp(16px, 3.5vw, 20px);
+            font-size: clamp(24px, 5.5vw, 30px);
+            text-align: center;
+            border: 3px solid #3498db;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            outline: none;
+            direction: ltr;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .answer-input:focus {
+            border-color: #2ecc71;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+            transform: scale(1.02);
+        }
+        
+        .answer-input.correct {
+            border-color: #2ecc71;
+            background: #d4edda;
+        }
+        
+        .answer-input.wrong {
+            border-color: #e74c3c;
+            background: #f8d7da;
+        }
+        
+        .submit-button {
+            width: 100%;
+            max-width: 320px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: clamp(16px, 3.5vw, 20px);
+            font-size: clamp(17px, 4vw, 21px);
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-button:active {
+            transform: translateY(0);
+        }
+        
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .coin-animation {
+            position: fixed;
+            font-size: 42px;
+            pointer-events: none;
+            z-index: 9999;
+            animation: coinFly 1s ease-out forwards;
+        }
+        
+        @keyframes coinFly {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(0, -150px) scale(0.5) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .feedback-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(90px, 20vw, 150px);
+            font-weight: bold;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            text-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            transition: opacity 0.3s;
+        }
+        
+        .feedback-overlay.show {
+            opacity: 1;
+            animation: feedbackBounce 0.6s ease;
+        }
+        
+        @keyframes feedbackBounce {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+        }
+        
+        .combo-badge {
+            position: fixed;
+            top: clamp(100px, 15vh, 140px);
+            right: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: clamp(14px, 3vw, 20px) clamp(22px, 4vw, 32px);
+            border-radius: 18px;
+            font-size: clamp(22px, 5vw, 30px);
+            font-weight: bold;
+            z-index: 100;
+            box-shadow: 0 6px 25px rgba(245, 87, 108, 0.6);
+            animation: comboBounce 0.5s ease;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        @keyframes comboBounce {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.15) rotate(-5deg); }
+            75% { transform: scale(1.15) rotate(5deg); }
+        }
+        
+        .combo-text {
+            display: block;
+            font-size: clamp(13px, 3vw, 15px);
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        .game-over-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 25px;
+            animation: modalFadeIn 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .game-over-content {
+            background: white;
+            border-radius: 25px;
+            padding: clamp(30px, 6vw, 45px);
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+            animation: modalSlideUp 0.4s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        @keyframes modalSlideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .game-over-icon {
+            font-size: clamp(80px, 16vw, 110px);
+            margin: 20px 0;
+            animation: iconSpin 0.6s ease;
+        }
+        
+        @keyframes iconSpin {
+            0% { transform: rotate(0deg) scale(0); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .game-over-title {
+            font-size: clamp(28px, 6vw, 38px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 18px;
+        }
+        
+        .game-over-subtitle {
+            font-size: clamp(15px, 3.5vw, 19px);
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+        
+        .new-medal-notification {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            padding: 18px;
+            border-radius: 15px;
+            margin: 18px 0;
+            animation: medalNotifPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes medalNotifPulse {
+            0%, 100% { box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); }
+            50% { box-shadow: 0 8px 35px rgba(255, 215, 0, 0.7); }
+        }
+        
+        .new-medal-text {
+            font-size: clamp(17px, 4vw, 21px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        
+        .new-medals-list {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .new-medal-item {
+            font-size: clamp(36px, 8vw, 52px);
+            animation: medalBounce 0.6s ease infinite;
+        }
+        
+        @keyframes medalBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .final-stats-grid {
+            background: #f8f9fa;
+            padding: 22px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .final-stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: clamp(15px, 3.5vw, 19px);
+        }
+        
+        .final-stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .final-stat-label {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        .final-stat-value {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .coin-reward {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #2c3e50;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: clamp(20px, 4.5vw, 26px);
+            font-weight: bold;
+            display: inline-block;
+            margin: 18px 0;
+            animation: coinShine 1s ease-in-out infinite;
+        }
+        
+        @keyframes coinShine {
+            0%, 100% { box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 8px 25px rgba(255, 215, 0, 0.8); }
+        }
+        
+        .game-over-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .game-over-btn {
+            flex: 1;
+            padding: clamp(16px, 3.5vw, 20px);
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(16px, 3.5vw, 19px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 140px;
+        }
+        
+        .game-over-btn.restart {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .game-over-btn.menu {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+        }
+        
+        .game-over-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .game-over-btn:active {
+            transform: translateY(0);
+        }
+        
+        .medal-unlock-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: clamp(35px, 7vw, 55px);
+            border-radius: 25px;
+            text-align: center;
+            z-index: 3000;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 90%;
+            width: 450px;
+        }
+        
+        .medal-unlock-modal.show {
+            animation: medalUnlockPop 0.6s ease forwards;
+        }
+        
+        @keyframes medalUnlockPop {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.15) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+        
+        .medal-unlock-icon {
+            font-size: clamp(90px, 18vw, 130px);
+            margin-bottom: 25px;
+            animation: medalRotate 3s ease-in-out infinite;
+        }
+        
+        @keyframes medalRotate {
+            0%, 100% { transform: rotate(-15deg) scale(1); }
+            50% { transform: rotate(15deg) scale(1.1); }
+        }
+        
+        .medal-unlock-title {
+            font-size: clamp(24px, 5.5vw, 34px);
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .medal-unlock-desc {
+            font-size: clamp(15px, 3.5vw, 19px);
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .medal-unlock-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: clamp(14px, 3vw, 18px) clamp(30px, 6vw, 40px);
+            font-size: clamp(16px, 3.5vw, 19px);
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .medal-unlock-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .fullscreen-toggle,
+        .sound-toggle {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(52, 152, 219, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 150;
+            font-size: 26px;
+        }
+        
+        .fullscreen-toggle {
+            bottom: 100px;
+            right: 25px;
+        }
+        
+        .sound-toggle {
+            bottom: 25px;
+            right: 25px;
+        }
+        
+        .fullscreen-toggle:hover,
+        .sound-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .fullscreen-toggle:active,
+        .sound-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        .sound-toggle.muted {
+            background: rgba(231, 76, 60, 0.92);
+            border-color: rgba(192, 57, 43, 0.5);
+            color: white;
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 50%, #2a1f3a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5000;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .loading-rocket {
+            font-size: clamp(70px, 15vw, 110px);
+            animation: loadingBounce 1s ease-in-out infinite;
+        }
+        
+        @keyframes loadingBounce {
+            0%, 100% { transform: translateY(0) rotate(-10deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+        
+        .loading-text {
+            color: white;
+            font-size: clamp(20px, 4vw, 26px);
+            font-weight: bold;
+        }
+        
+        .loading-bar {
+            width: 220px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .loading-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            animation: loadingProgress 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes loadingProgress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+        
+        @media (max-width: 768px) {
+            .main-menu-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .level-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .shop-items {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .medals-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .game-over-buttons {
+                flex-direction: column;
+            }
+            
+            .game-over-btn {
+                width: 100%;
+            }
+            
+            .combo-badge {
+                top: 80px;
+                right: 15px;
+                padding: 12px 18px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .shop-items {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .menu-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-stats-bar {
+                justify-content: center;
+            }
+            
+            .purchase-modal-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-height: 600px) and (orientation: landscape) {
+            .rocket-area {
+                height: 140px !important;
+            }
+            
+            .question-box {
+                padding: 15px !important;
+                margin: 10px !important;
+            }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="starsContainer"></div>
+    
+    <div class="loading-screen hidden" id="loadingScreen">
+        <div class="loading-rocket">🚀</div>
+        <div class="loading-text">در حال بارگذاری...</div>
+        <div class="loading-bar">
+            <div class="loading-bar-fill"></div>
+        </div>
+    </div>
+    
+    <div class="fullscreen-toggle" id="fullscreenToggle" title="تمام صفحه">⛶</div>
+    <div class="sound-toggle" id="soundToggle" title="صدا">🔊</div>
+    
+    <div class="main-menu" id="mainMenu">
+        <div class="menu-container">
+            <div class="game-logo">🚀 موشک ریاضی</div>
+            <div class="game-subtitle">ماجراجویی در دنیای اعداد!</div>
+            <div class="rocket-animation">🚀</div>
+            
+            <div style="text-align: center;">
+                <div class="streak-badge" id="streakBadge">
+                    🔥 <span class="streak-number" id="streakNumber">0</span> روز استرایک
+                </div>
+            </div>
+            
+            <div class="menu-stats">
+                <div class="menu-stat-item">
+                    <div class="menu-stat-icon">💰</div>
+                    <div class="menu-stat-value" id="menuCoins">0</div>
+                    <div class="menu-stat-label">سکه</div>
+                </div>
+                <div class="menu-stat-item">
+                    <div class="menu-stat-icon">🏆</div>
+                    <div class="menu-stat-value" id="menuHighscore">0</div>
+                    <div class="menu-stat-label">رکورد (متر)</div>
+                </div>
+                <div class="menu-stat-item">
+                    <div class="menu-stat-icon">🏅</div>
+                    <div class="menu-stat-value" id="menuMedals">0</div>
+                    <div class="menu-stat-label">مدال</div>
+                </div>
+            </div>
+            
+            <div class="main-menu-buttons">
+                <button class="menu-btn primary" onclick="showLevelSelect()">
+                    <span class="menu-btn-icon">🎮</span>
+                    <span class="menu-btn-title">شروع بازی</span>
+                </button>
+                
+                <button class="menu-btn success" onclick="showSettings()">
+                    <span class="menu-btn-icon">⚙️</span>
+                    <span class="menu-btn-title">تنظیمات</span>
+                </button>
+                
+                <button class="menu-btn warning" onclick="showShop()">
+                    <span class="menu-btn-icon">🛒</span>
+                    <span class="menu-btn-title">فروشگاه</span>
+                </button>
+                
+                <button class="menu-btn info" onclick="showStats()">
+                    <span class="menu-btn-icon">📊</span>
+                    <span class="menu-btn-title">آمار من</span>
+                </button>
+                
+                <button class="menu-btn info" onclick="showMedals()">
+                    <span class="menu-btn-icon">🏆</span>
+                    <span class="menu-btn-title">مدال‌ها</span>
+                </button>
+                
+                <button class="menu-btn success" onclick="showTutorial()">
+                    <span class="menu-btn-icon">📚</span>
+                    <span class="menu-btn-title">آموزش</span>
+                </button>
+            </div>
+            
+            <div style="margin-top: 25px; padding: 18px; background: #f8f9fa; border-radius: 15px; text-align: center;">
+                <p style="font-size: clamp(12px, 2.5vw, 14px); color: #7f8c8d;">
+                    نسخه 2.1 فاینال | ساخته شده با ❤️
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="level-select-screen hidden" id="levelSelectScreen">
+        <div class="level-select-container">
+            <div class="screen-header">
+                <button class="back-button" onclick="showMainMenu()">↩</button>
+                <h2 class="screen-title">انتخاب سطح</h2>
+            </div>
+            <div class="level-grid" id="levelGrid"></div>
+        </div>
+    </div>
+    
+    <div class="settings-screen hidden" id="settingsScreen">
+        <div class="settings-container">
+            <div class="screen-header">
+                <button class="back-button" onclick="showMainMenu()">↩</button>
+                <h2 class="screen-title">تنظیمات سوالات</h2>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-section-title">
+                    <span>➕</span>
+                    انتخاب عملیات‌ها
+                </div>
+                <div class="checkbox-group" id="operationsCheckbox"></div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-section-title">
+                    <span>📊</span>
+                    سطح سختی
+                </div>
+                <div class="radio-group" id="difficultyRadio"></div>
+            </div>
+            
+            <button class="save-button" onclick="saveSettings()">
+                💾 ذخیره و شروع بازی
+            </button>
+        </div>
+    </div>
+    
+    <div class="shop-screen hidden" id="shopScreen">
+        <div class="shop-container">
+            <div class="screen-header">
+                <button class="back-button" onclick="showMainMenu()">↩</button>
+                <h2 class="screen-title">فروشگاه</h2>
+            </div>
+            
+            <div class="shop-balance">
+                <div class="shop-balance-amount">
+                    💰 <span id="shopCoins">0</span>
+                </div>
+                <div class="shop-balance-label">موجودی شما</div>
+            </div>
+            
+            <div class="shop-tabs">
+                <button class="shop-tab active" onclick="switchShopTab('rockets')">🚀 موشک‌ها</button>
+                <button class="shop-tab" onclick="switchShopTab('backgrounds')">🌌 پس‌زمینه</button>
+                <button class="shop-tab" onclick="switchShopTab('music')">🎵 موزیک</button>
+                <button class="shop-tab" onclick="switchShopTab('effects')">✨ جلوه‌ها</button>
+                <button class="shop-tab" onclick="switchShopTab('titles')">👑 لقب‌ها</button>
+                <button class="shop-tab" onclick="switchShopTab('powerups')">⚡ پاوراپ</button>
+            </div>
+            
+            <div class="shop-items" id="shopItems"></div>
+        </div>
+    </div>
+    
+    <div class="purchase-modal hidden" id="purchaseModal">
+        <div class="purchase-modal-content">
+            <div class="purchase-modal-icon" id="purchaseIcon">🚀</div>
+            <div class="purchase-modal-title" id="purchaseTitle">خرید آیتم</div>
+            <div class="purchase-modal-desc" id="purchaseDesc">آیا می‌خواهی این آیتم رو بخری؟</div>
+            <div class="purchase-modal-price" id="purchasePrice">💰 100</div>
+            <div class="purchase-modal-buttons">
+                <button class="purchase-btn confirm" id="confirmPurchaseBtn">✅ خرید</button>
+                <button class="purchase-btn cancel" onclick="closePurchaseModal()">❌ انصراف</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stats-screen hidden" id="statsScreen">
+        <div class="stats-container">
+            <div class="screen-header">
+                <button class="back-button" onclick="showMainMenu()">↩</button>
+                <h2 class="screen-title">آمار من</h2>
+            </div>
+            
+            <div class="stats-card">
+                <div class="stats-card-title">
+                    <span>📈</span>
+                    آمار کلی
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-box-icon">🎮</div>
+                        <div class="stat-box-value" id="totalGames">0</div>
+                        <div class="stat-box-label">بازی کل</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon">✅</div>
+                        <div class="stat-box-value" id="totalCorrect">0</div>
+                        <div class="stat-box-label">پاسخ درست</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon">❌</div>
+                        <div class="stat-box-value" id="totalWrong">0</div>
+                        <div class="stat-box-label">پاسخ غلط</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon">🏆</div>
+                        <div class="stat-box-value" id="bestAltitude">0</div>
+                        <div class="stat-box-label">بهترین ارتفاع</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon">💰</div>
+                        <div class="stat-box-value" id="totalCoins">0</div>
+                        <div class="stat-box-label">کل سکه</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon">🏅</div>
+                        <div class="stat-box-value" id="totalMedalsCount">0</div>
+                        <div class="stat-box-label">مدال‌ها</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon">🔥</div>
+                        <div class="stat-box-value" id="bestCombo">0</div>
+                        <div class="stat-box-label">بهترین کمبو</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-icon">📅</div>
+                        <div class="stat-box-value" id="currentStreak">0</div>
+                        <div class="stat-box-label">استرایک فعلی</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-card">
+                <div class="stats-card-title">
+                    <span>📊</span>
+                    درصد موفقیت
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="successRate" style="width: 0%;">0%</div>
+                </div>
+            </div>
+            
+            <div class="stats-card">
+                <div class="stats-card-title">
+                    <span>👑</span>
+                    رتبه شما
+                </div>
+                <div style="text-align: center; padding: 25px;">
+                    <div style="font-size: clamp(60px, 12vw, 90px);" id="rankIcon">🥉</div>
+                    <div style="font-size: clamp(22px, 5vw, 30px); font-weight: bold; color: #3498db; margin-top: 15px;" id="rankName">مبتدی</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="medals-screen hidden" id="medalsScreen">
+        <div class="medals-container">
+            <div class="screen-header">
+                <button class="back-button" onclick="showMainMenu()">↩</button>
+                <h2 class="screen-title">مدال‌های من</h2>
+            </div>
+            <div id="medalsContent"></div>
+        </div>
+    </div>
+    
+    <div class="tutorial-screen hidden" id="tutorialScreen">
+        <div class="tutorial-container">
+            <div class="screen-header">
+                <button class="back-button" onclick="showMainMenu()">↩</button>
+                <h2 class="screen-title">آموزش</h2>
+            </div>
+            
+            <div class="tutorial-tabs">
+                <button class="tutorial-tab active" onclick="switchTutorialTab('multiply')">✖️ جدول ضرب</button>
+                <button class="tutorial-tab" onclick="switchTutorialTab('tips')">💡 نکات</button>
+                <button class="tutorial-tab" onclick="switchTutorialTab('guide')">📖 راهنما</button>
+            </div>
+            
+            <div class="tutorial-content" id="tutorialContent"></div>
+        </div>
+    </div>
+    
+    <div class="game-screen hidden" id="gameScreen">
+        <div class="game-header">
+            <button class="game-back-btn" onclick="pauseGame()" title="بازگشت">↩</button>
+            
+            <div class="game-stats-bar">
+                <div class="game-stat">
+                    <div class="game-stat-label">امتیاز</div>
+                    <div class="game-stat-value" id="gameScore">0</div>
+                </div>
+                <div class="game-stat">
+                    <div class="game-stat-label">ارتفاع</div>
+                    <div class="game-stat-value" id="gameAltitude">0</div>
+                </div>
+                <div class="game-stat">
+                    <div class="game-stat-label">رکورد</div>
+                    <div class="game-stat-value" id="gameRecord">0</div>
+                </div>
+                <div class="game-stat">
+                    <div class="game-stat-label">💰</div>
+                    <div class="game-stat-value" id="gameCoins">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-content">
+            <div class="powerups-container" id="powerupsContainer"></div>
+            
+            <div class="rocket-area">
+                <div class="space-objects" id="spaceObjects"></div>
+                <div class="rocket" id="rocket">
+                    🚀
+                    <div class="rocket-fire">🔥</div>
+                </div>
+            </div>
+            
+            <div class="fuel-container">
+                <div class="fuel-label">⛽ سوخت: <span id="fuelTime">20</span> ثانیه</div>
+                <div class="fuel-bar">
+                    <div class="fuel-fill" id="fuelFill" style="width: 100%;"></div>
+                    <div class="fuel-text" id="fuelPercent">100%</div>
+                </div>
+            </div>
+            
+            <div class="question-box">
+                <div class="level-badge" id="levelBadge">عادی 🌟</div>
+                <div class="question-text ltr-content" id="questionText">8 × 7 = ?</div>
+                <input 
+                    type="tel" 
+                    class="answer-input ltr-content" 
+                    id="answerInput" 
+                    placeholder="پاسخ"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    autocomplete="off"
+                />
+                <button class="submit-button" onclick="submitAnswer()" id="submitButton">
+                    ✅ ثبت پاسخ
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="feedback-overlay" id="feedbackOverlay"></div>
+    
+    <div class="combo-badge hidden" id="comboBadge">
+        <div>🔥 کمبو</div>
+        <div class="combo-text" id="comboCount">5</div>
+    </div>
+    
+    <div class="game-over-modal hidden" id="gameOverModal">
+        <div class="game-over-content">
+            <div class="game-over-icon" id="gameOverIcon">🎮</div>
+            <div class="game-over-title" id="gameOverTitle">بازی تمام شد!</div>
+            <div class="game-over-subtitle" id="gameOverSubtitle">عملکرد خوبی داشتی!</div>
+            
+            <div class="new-medal-notification hidden" id="newMedalNotif">
+                <div class="new-medal-text">🎉 مدال جدید دریافت کردی!</div>
+                <div class="new-medals-list" id="newMedalsList"></div>
+            </div>
+            
+            <div class="final-stats-grid">
+                <div class="final-stat-row">
+                    <span class="final-stat-label">ارتفاع نهایی:</span>
+                    <span class="final-stat-value" id="finalAltitude">0 متر</span>
+                </div>
+                <div class="final-stat-row">
+                    <span class="final-stat-label">امتیاز کل:</span>
+                    <span class="final-stat-value" id="finalScore">0</span>
+                </div>
+                <div class="final-stat-row">
+                    <span class="final-stat-label">پاسخ درست:</span>
+                    <span class="final-stat-value" id="finalCorrect">0</span>
+                </div>
+                <div class="final-stat-row">
+                    <span class="final-stat-label">پاسخ غلط:</span>
+                    <span class="final-stat-value" id="finalWrong">0</span>
+                </div>
+                <div class="final-stat-row">
+                    <span class="final-stat-label">بهترین کمبو:</span>
+                    <span class="final-stat-value" id="finalBestCombo">0</span>
+                </div>
+            </div>
+            
+            <div class="coin-reward" id="coinReward">
+                💰 +50 سکه
+            </div>
+            
+            <div class="game-over-buttons">
+                <button class="game-over-btn restart" onclick="restartGame()">
+                    🔄 بازی دوباره
+                </button>
+                <button class="game-over-btn menu" onclick="backToMainMenu()">
+                    🏠 منوی اصلی
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="medal-unlock-modal" id="medalUnlockModal">
+        <div class="medal-unlock-icon" id="medalUnlockIcon">🏆</div>
+        <div class="medal-unlock-title" id="medalUnlockTitle">مدال جدید!</div>
+        <div class="medal-unlock-desc" id="medalUnlockDesc">توضیحات مدال</div>
+        <button class="medal-unlock-btn" onclick="closeMedalUnlock()">
+            عالی! 🎉
+        </button>
+    </div>
+
+    <script>
+let gameState = {
+    score: 0,
+    altitude: 0,
+    coins: 0,
+    fuel: 20,
+    maxFuel: 20,
+    currentLevel: 'normal',
+    combo: 0,
+    maxCombo: 0,
+    correctAnswers: 0,
+    wrongAnswers: 0,
+    totalGames: 0,
+    bestAltitude: 0,
+    isPlaying: false,
+    currentQuestion: null,
+    fuelTimer: null,
+    soundEnabled: true,
+    powerups: {
+        timeBoost: 3,
+        skipQuestion: 3
+    }
+};
+
+let userSettings = {
+    operations: ['+', '-', '×', '÷'],
+    difficulty: 'medium',
+    equippedRocket: '🚀',
+    equippedBackground: 'default',
+    equippedMusic: 'default',
+    equippedEffect: 'default',
+    equippedTitle: null
+};
+
+let inventory = {
+    rockets: ['🚀'],
+    backgrounds: ['default'],
+    music: ['default'],
+    effects: ['default'],
+    titles: []
+};
+
+let unlockedMedals = [];
+let newMedalsThisGame = [];
+
+let streakData = {
+    current: 0,
+    lastPlayDate: null,
+    best: 0
+};
+
+let audioContext = null;
+let shootingStarInterval = null;
+
+const gameLevels = {
+    normal: {
+        name: 'عادی',
+        icon: '🌟',
+        desc: 'بازی استاندارد',
+        color: '#3498db',
+        initialFuel: 25,
+        fuelBonus: 20,
+        fuelPenalty: 2,
+        coinMultiplier: 1,
+        locked: false,
+        unlockCost: 0
+    },
+    night: {
+        name: 'شب',
+        icon: '🌙',
+        desc: 'فضای تاریک‌تر',
+        color: '#34495e',
+        initialFuel: 20,
+        fuelBonus: 18,
+        fuelPenalty: 2,
+        coinMultiplier: 1.5,
+        locked: false,
+        unlockCost: 0
+    },
+    challenge: {
+        name: 'چالش',
+        icon: '⚡',
+        desc: 'سوالات سخت‌تر',
+        color: '#e74c3c',
+        initialFuel: 15,
+        fuelBonus: 12,
+        fuelPenalty: 4,
+        coinMultiplier: 2,
+        locked: false,
+        unlockCost: 0
+    },
+    timed: {
+        name: 'زمان‌دار',
+        icon: '⏱️',
+        desc: '2 دقیقه وقت داری',
+        color: '#f39c12',
+        initialFuel: 120,
+        fuelBonus: 5,
+        fuelPenalty: 10,
+        coinMultiplier: 1.5,
+        locked: false,
+        unlockCost: 0
+    },
+    infinite: {
+        name: 'تمرین',
+        icon: '♾️',
+        desc: 'بدون محدودیت',
+        color: '#2ecc71',
+        initialFuel: 999,
+        fuelBonus: 0,
+        fuelPenalty: 0,
+        coinMultiplier: 0,
+        locked: false,
+        unlockCost: 0
+    },
+    hell: {
+        name: 'جهنمی',
+        icon: '🔥',
+        desc: 'برای نابغه‌ها!',
+        color: '#8b0000',
+        initialFuel: 10,
+        fuelBonus: 8,
+        fuelPenalty: 5,
+        coinMultiplier: 3,
+        locked: true,
+        unlockCost: 1000
+    }
+};
+
+const difficultyLevels = {
+    veryEasy: {
+        name: 'خیلی آسان',
+        icon: '🟢',
+        desc: 'یک رقمی + یک رقمی (3 + 5)',
+        range: { min: 1, max: 9 },
+        operations: ['+', '-'],
+        locked: false,
+        cost: 0
+    },
+    easy: {
+        name: 'آسان',
+        icon: '🟡',
+        desc: 'یک رقمی × یک رقمی (4 × 7)',
+        range: { min: 1, max: 9 },
+        operations: ['+', '-', '×', '÷'],
+        locked: false,
+        cost: 0
+    },
+    medium: {
+        name: 'متوسط',
+        icon: '🟠',
+        desc: 'دو رقمی + یک رقمی (23 + 8)',
+        range: { min1: 10, max1: 99, min2: 1, max2: 9 },
+        locked: false,
+        cost: 100
+    },
+    hard: {
+        name: 'سخت',
+        icon: '🔴',
+        desc: 'دو رقمی × یک رقمی (45 × 9)',
+        range: { min1: 10, max1: 99, min2: 1, max2: 9 },
+        locked: true,
+        cost: 300
+    },
+    veryHard: {
+        name: 'خیلی سخت',
+        icon: '🟣',
+        desc: 'دو رقمی × دو رقمی (34 × 28)',
+        range: { min: 10, max: 99 },
+        locked: true,
+        cost: 500
+    },
+    nightmare: {
+        name: 'جهنمی',
+        icon: '⚫',
+        desc: 'سه رقمی × دو رقمی (123 × 45)',
+        range: { min1: 100, max1: 999, min2: 10, max2: 99 },
+        locked: true,
+        cost: 1000
+    }
+};
+
+const medals = {
+    bronze: [
+        { id: 'first_flight', icon: '🌟', name: 'اولین پرواز', desc: 'اولین بازی', check: () => gameState.totalGames >= 1 },
+        { id: 'fifty_meter', icon: '🎯', name: 'پنجاه متری', desc: '50 متر ارتفاع', check: () => gameState.altitude >= 50 },
+        { id: 'ten_correct', icon: '🔢', name: 'ده سوال', desc: '10 پاسخ درست', check: () => gameState.correctAnswers >= 10 }
+    ],
+    silver: [
+        { id: 'two_hundred', icon: '🚁', name: 'دویست متری', desc: '200 متر ارتفاع', check: () => gameState.altitude >= 200 },
+        { id: 'combo_5', icon: '🔥', name: 'کمبو 5', desc: '5 پاسخ پشت سر هم', check: () => gameState.combo >= 5 },
+        { id: 'speed', icon: '⚡', name: 'سرعت', desc: '5 پاسخ سریع', check: () => false },
+        { id: 'twenty_correct', icon: '💯', name: 'بیست سوال', desc: '20 پاسخ درست', check: () => gameState.correctAnswers >= 20 },
+        { id: 'first_buy', icon: '💰', name: 'اولین خرید', desc: 'خرید اولین آیتم', check: () => inventory.rockets.length > 1 },
+        { id: 'streak_3', icon: '🔥', name: 'سه روز', desc: '3 روز پشت سر هم', check: () => streakData.current >= 3 }
+    ],
+    gold: [
+        { id: 'thousand_meter', icon: '✈️', name: 'هزار متری', desc: '1000 متر ارتفاع', check: () => gameState.altitude >= 1000 },
+        { id: 'combo_10', icon: '⚡', name: 'کمبو 10', desc: '10 پاسخ متوالی', check: () => gameState.combo >= 10 },
+        { id: 'fifty_correct', icon: '💎', name: 'پنجاه سوال', desc: '50 پاسخ درست', check: () => gameState.correctAnswers >= 50 },
+        { id: 'hard_level', icon: '😎', name: 'سطح سخت', desc: 'تموم کردن سطح سخت', check: () => false },
+        { id: 'perfect', icon: '🎯', name: 'دقت بالا', desc: '10 سوال بدون غلط', check: () => gameState.correctAnswers >= 10 && gameState.wrongAnswers === 0 },
+        { id: 'streak_7', icon: '🔥', name: 'هفت روز', desc: '7 روز پشت سر هم', check: () => streakData.current >= 7 }
+    ],
+    diamond: [
+        { id: 'two_thousand', icon: '🛸', name: 'دو هزار متری', desc: '2000 متر', check: () => gameState.altitude >= 2000 },
+        { id: 'combo_20', icon: '🔥', name: 'کمبو 20', desc: '20 پاسخ متوالی', check: () => gameState.combo >= 20 },
+        { id: 'expert_level', icon: '🏆', name: 'سطح استاد', desc: 'تموم کردن استاد', check: () => false },
+        { id: 'hundred_correct', icon: '🧮', name: 'صد سوال', desc: '100 پاسخ درست', check: () => gameState.correctAnswers >= 100 },
+        { id: 'perfect_20', icon: '💯', name: 'کامل', desc: '20 سوال بدون غلط', check: () => gameState.correctAnswers >= 20 && gameState.wrongAnswers === 0 },
+        { id: 'lightning', icon: '⚡', name: 'برق آسا', desc: '10 پاسخ خیلی سریع', check: () => false },
+        { id: 'streak_30', icon: '🔥', name: 'یک ماه', desc: '30 روز پشت سر هم', check: () => streakData.current >= 30 }
+    ],
+    legend: [
+        { id: 'five_thousand', icon: '🌟', name: 'پنج هزار متری', desc: '5000 متر', check: () => gameState.altitude >= 5000 },
+        { id: 'combo_50', icon: '🔥', name: 'کمبو 50', desc: '50 پاسخ پشت سر هم!', check: () => gameState.combo >= 50 },
+        { id: 'math_king', icon: '👑', name: 'پادشاه ریاضی', desc: '500 پاسخ درست', check: () => gameState.correctAnswers >= 500 },
+        { id: 'rich', icon: '💎', name: 'ثروتمند', desc: '10000 سکه جمع کن', check: () => gameState.coins >= 10000 },
+        { id: 'streak_100', icon: '🔥', name: 'صد روز!', desc: '100 روز پشت سر هم!', check: () => streakData.current >= 100 }
+    ]
+};
+
+const shopItems = {
+    rockets: [
+        { id: 'rocket_classic', icon: '🚀', name: 'موشک کلاسیک', price: 0, owned: true },
+        { id: 'plane', icon: '✈️', name: 'هواپیما', price: 300, owned: false },
+        { id: 'ufo', icon: '🛸', name: 'بشقاب پرنده', price: 600, owned: false },
+        { id: 'helicopter', icon: '🚁', name: 'هلیکوپتر', price: 1000, owned: false },
+        { id: 'eagle', icon: '🦅', name: 'عقاب', price: 1500, owned: false },
+        { id: 'dragon', icon: '🐉', name: 'اژدها', price: 3000, owned: false },
+        { id: 'comet', icon: '🌟', name: 'ستاره دنباله‌دار', price: 5000, owned: false },
+        { id: 'ufo_gold', icon: '👽', name: 'UFO طلایی', price: 10000, owned: false }
+    ],
+    backgrounds: [
+        { id: 'bg_default', icon: '🌌', name: 'فضای عادی', price: 0, owned: true },
+        { id: 'bg_night', icon: '🌃', name: 'شب مهتابی', price: 400, owned: false },
+        { id: 'bg_mars', icon: '🌅', name: 'غروب مریخ', price: 800, owned: false },
+        { id: 'bg_rainbow', icon: '🌈', name: 'کهکشان رنگی', price: 1200, owned: false },
+        { id: 'bg_storm', icon: '⚡', name: 'طوفان رعد و برق', price: 2000, owned: false },
+        { id: 'bg_galaxy', icon: '🌠', name: 'سفر بین کهکشانی', price: 4000, owned: false }
+    ],
+    music: [
+        { id: 'music_default', icon: '🎼', name: 'موزیک 1', price: 0, owned: true },
+        { id: 'music_space', icon: '🎵', name: 'موزیک فضایی', price: 500, owned: false },
+        { id: 'music_electronic', icon: '🎶', name: 'موزیک الکترونیک', price: 800, owned: false },
+        { id: 'music_epic', icon: '🎸', name: 'موزیک حماسی', price: 1500, owned: false }
+    ],
+    effects: [
+        { id: 'effect_default', icon: '✨', name: 'جلوه عادی', price: 0, owned: true },
+        { id: 'effect_gold', icon: '✨', name: 'جرقه طلایی', price: 700, owned: false },
+        { id: 'effect_star', icon: '🌟', name: 'انفجار ستاره', price: 1000, owned: false },
+        { id: 'effect_rainbow', icon: '🔥', name: 'آتش رنگین‌کمان', price: 2000, owned: false }
+    ],
+    titles: [
+        { id: 'title_genius', icon: '🌟', name: 'نابغه ریاضی', price: 500, owned: false },
+        { id: 'title_pilot', icon: '🚀', name: 'خلبان حرفه‌ای', price: 800, owned: false },
+        { id: 'title_lightning', icon: '⚡', name: 'برق آسا', price: 1200, owned: false },
+        { id: 'title_master', icon: '💎', name: 'استاد بزرگ', price: 2000, owned: false },
+        { id: 'title_king', icon: '👑', name: 'پادشاه فضا', price: 3000, owned: false },
+        { id: 'title_legend', icon: '🏆', name: 'افسانه', price: 5000, owned: false },
+        { id: 'title_rocket_god', icon: '🔥', name: 'خدای موشک', price: 10000, owned: false },
+        { id: 'title_math_hero', icon: '🦸', name: 'قهرمان ریاضی', price: 15000, owned: false }
+    ],
+    powerups: [
+        { id: 'powerup_time', icon: '⏰', name: 'زمان اضافه', price: 50, desc: '+10 ثانیه سوخت', type: 'consumable' },
+        { id: 'powerup_skip', icon: '⏭️', name: 'رد سوال', price: 30, desc: 'سوال رو رد کن', type: 'consumable' }
+    ]
+};
+
+function saveGameData() {
+    try {
+        const saveData = {
+            coins: gameState.coins,
+            totalGames: gameState.totalGames,
+            bestAltitude: gameState.bestAltitude,
+            correctAnswers: gameState.correctAnswers,
+            wrongAnswers: gameState.wrongAnswers,
+            maxCombo: gameState.maxCombo,
+            unlockedMedals: unlockedMedals,
+            inventory: inventory,
+            userSettings: userSettings,
+            powerups: gameState.powerups,
+            streakData: streakData,
+            unlockedLevels: Object.keys(gameLevels).filter(key => !gameLevels[key].locked),
+            unlockedDifficulties: Object.keys(difficultyLevels).filter(key => !difficultyLevels[key].locked)
+        };
+        localStorage.setItem('rocketMathGame', JSON.stringify(saveData));
+    } catch (e) {
+        console.warn('خطا در ذخیره:', e);
+    }
+}
+
+function loadGameData() {
+    const saved = localStorage.getItem('rocketMathGame');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            gameState.coins = data.coins || 0;
+            gameState.totalGames = data.totalGames || 0;
+            gameState.bestAltitude = data.bestAltitude || 0;
+            gameState.correctAnswers = data.correctAnswers || 0;
+            gameState.wrongAnswers = data.wrongAnswers || 0;
+            gameState.maxCombo = data.maxCombo || 0;
+            unlockedMedals = data.unlockedMedals || [];
+            inventory = data.inventory || inventory;
+            userSettings = data.userSettings || userSettings;
+            streakData = data.streakData || streakData;
+            
+            if (data.powerups) {
+                gameState.powerups = data.powerups;
+            }
+            
+            if (data.unlockedLevels) {
+                data.unlockedLevels.forEach(level => {
+                    if (gameLevels[level]) gameLevels[level].locked = false;
+                });
+            }
+            
+            if (data.unlockedDifficulties) {
+                data.unlockedDifficulties.forEach(diff => {
+                    if (difficultyLevels[diff]) difficultyLevels[diff].locked = false;
+                });
+            }
+            
+            Object.keys(shopItems).forEach(category => {
+                shopItems[category].forEach(item => {
+                    if (inventory[category] && inventory[category].includes(item.id)) {
+                        item.owned = true;
+                    }
+                });
+            });
+        } catch (e) {
+            console.error('خطا در بارگذاری:', e);
+        }
+    }
+}
+
+function updateStreak() {
+    const today = new Date().toDateString();
+    const lastPlay = streakData.lastPlayDate;
+    
+    if (!lastPlay) {
+        streakData.current = 1;
+        streakData.lastPlayDate = today;
+    } else if (lastPlay === today) {
+        return;
+    } else {
+        const lastDate = new Date(lastPlay);
+        const todayDate = new Date(today);
+        const diffTime = todayDate - lastDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+            streakData.current++;
+            streakData.lastPlayDate = today;
+            
+            if (streakData.current > streakData.best) {
+                streakData.best = streakData.current;
+            }
+            
+            const bonusCoins = streakData.current * 5;
+            gameState.coins += bonusCoins;
+            showFeedback('🔥', `استرایک ${streakData.current}! +${bonusCoins} سکه`);
+        } else {
+            streakData.current = 1;
+            streakData.lastPlayDate = today;
+        }
+    }
+    
+    updateStreakDisplay();
+    saveGameData();
+}
+
+function updateStreakDisplay() {
+    document.getElementById('streakNumber').textContent = streakData.current;
+    if (streakData.current === 0) {
+        document.getElementById('streakBadge').style.display = 'none';
+    } else {
+        document.getElementById('streakBadge').style.display = 'inline-flex';
+    }
+}
+
+function hideAllScreens() {
+    document.querySelectorAll('.main-menu, .level-select-screen, .settings-screen, .shop-screen, .stats-screen, .medals-screen, .tutorial-screen, .game-screen').forEach(screen => {
+        screen.classList.add('hidden');
+    });
+}
+
+function showMainMenu() {
+    hideAllScreens();
+    document.getElementById('mainMenu').classList.remove('hidden');
+    updateMainMenuStats();
+    updateStreakDisplay();
+}
+
+function showLevelSelect() {
+    hideAllScreens();
+    document.getElementById('levelSelectScreen').classList.remove('hidden');
+    renderLevelSelect();
+}
+
+function showSettings() {
+    hideAllScreens();
+    document.getElementById('settingsScreen').classList.remove('hidden');
+    renderSettings();
+}
+
+function showShop() {
+    hideAllScreens();
+    document.getElementById('shopScreen').classList.remove('hidden');
+    switchShopTab('rockets');
+    updateShopBalance();
+}
+
+function showStats() {
+    hideAllScreens();
+    document.getElementById('statsScreen').classList.remove('hidden');
+    renderStats();
+}
+
+function showMedals() {
+    hideAllScreens();
+    document.getElementById('medalsScreen').classList.remove('hidden');
+    renderMedals();
+}
+
+function showTutorial() {
+    hideAllScreens();
+    document.getElementById('tutorialScreen').classList.remove('hidden');
+    switchTutorialTab('multiply');
+}
+
+function backToMainMenu() {
+    if (gameState.fuelTimer) {
+        clearInterval(gameState.fuelTimer);
+        gameState.fuelTimer = null;
+    }
+    gameState.isPlaying = false;
+    hideCombo();
+    document.getElementById('gameOverModal').classList.add('hidden');
+    document.getElementById('purchaseModal').classList.add('hidden');
+    document.getElementById('medalUnlockModal').classList.remove('show');
+    
+    const rocket = document.getElementById('rocket');
+    if (rocket) rocket.style.bottom = '0px';
+    
+    showMainMenu();
+}
+
+function createStars() {
+    const container = document.getElementById('starsContainer');
+    container.innerHTML = '';
+    
+    const starCount = Math.min(80, Math.floor(window.innerWidth / 12));
+    
+    for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        container.appendChild(star);
+    }
+}
+
+function createSpaceObjects() {
+    const container = document.getElementById('spaceObjects');
+    container.innerHTML = '';
+    
+    const objects = ['🪐', '🌍', '🌙', '☄️', '🛸', '👽', '🌟', '💫', '⭐'];
+    const count = Math.min(5, objects.length);
+    
+    for (let i = 0; i < count; i++) {
+        const obj = document.createElement('div');
+        obj.className = 'space-object';
+        obj.textContent = objects[Math.floor(Math.random() * objects.length)];
+        obj.style.left = Math.random() * 85 + 5 + '%';
+        obj.style.top = Math.random() * 70 + 10 + '%';
+        obj.style.animationDelay = Math.random() * 5 + 's';
+        obj.style.animationDuration = (12 + Math.random() * 8) + 's';
+        container.appendChild(obj);
+    }
+}
+
+function updateMainMenuStats() {
+    document.getElementById('menuCoins').textContent = gameState.coins;
+    document.getElementById('menuHighscore').textContent = gameState.bestAltitude;
+    document.getElementById('menuMedals').textContent = unlockedMedals.length;
+}
+
+function initAudioContext() {
+    if (!audioContext) {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.warn('Audio not supported');
+        }
+    }
+}
+
+function playBeep(frequency, duration, type = 'sine') {
+    if (!gameState.soundEnabled || !audioContext) return;
+    
+    try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+    } catch (e) {
+        // Silent fail
+    }
+}
+
+const sounds = {
+    correct: () => playBeep(800, 0.1, 'sine'),
+    wrong: () => playBeep(200, 0.2, 'sawtooth'),
+    coin: () => playBeep(1200, 0.1, 'sine'),
+    medal: () => {
+        playBeep(600, 0.1, 'sine');
+        setTimeout(() => playBeep(800, 0.1, 'sine'), 100);
+        setTimeout(() => playBeep(1000, 0.2, 'sine'), 200);
+    },
+    powerup: () => playBeep(1500, 0.15, 'triangle')
+};
+
+function playSound(soundName) {
+    if (sounds[soundName]) {
+        sounds[soundName]();
+    }
+}
+
+document.getElementById('soundToggle').onclick = function() {
+    gameState.soundEnabled = !gameState.soundEnabled;
+    this.textContent = gameState.soundEnabled ? '🔊' : '🔇';
+    this.classList.toggle('muted');
+    playSound('coin');
+};
+
+document.getElementById('fullscreenToggle').onclick = function() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log('Fullscreen error:', err);
+        });
+        this.textContent = '⛶';
+    } else {
+        document.exitFullscreen();
+        this.textContent = '⛶';
+    }
+};
+
+function renderLevelSelect() {
+    const container = document.getElementById('levelGrid');
+    container.innerHTML = '';
+    
+    Object.keys(gameLevels).forEach(key => {
+        const level = gameLevels[key];
+        const card = document.createElement('div');
+        card.className = `level-card ${key}`;
+        if (level.locked) card.classList.add('locked');
+        
+        card.innerHTML = `
+            <div class="level-card-icon">${level.icon}</div>
+            <div class="level-card-name">${level.name}</div>
+            <div class="level-card-desc">${level.desc}</div>
+            <div class="level-card-reward">سکه: ${level.coinMultiplier}×</div>
+        `;
+        
+        card.onclick = () => {
+            if (level.locked) {
+                if (gameState.coins >= level.unlockCost) {
+                    if (confirm(`باز کردن سطح ${level.name} با ${level.unlockCost} سکه؟`)) {
+                        gameState.coins -= level.unlockCost;
+                        level.locked = false;
+                        saveGameData();
+                        renderLevelSelect();
+                        playSound('coin');
+                    }
+                } else {
+                    showFeedback('❌', 'سکه کافی نداری!');
+                }
+            } else {
+                startGame(key);
+            }
+        };
+        
+        container.appendChild(card);
+    });
+}
+
+function renderSettings() {
+    const opsContainer = document.getElementById('operationsCheckbox');
+    opsContainer.innerHTML = '';
+    
+    const operations = [
+        { id: '+', icon: '➕', label: 'جمع', price: 0, locked: false },
+        { id: '-', icon: '➖', label: 'تفریق', price: 0, locked: false },
+        { id: '×', icon: '✖️', label: 'ضرب', price: 0, locked: false },
+        { id: '÷', icon: '➗', label: 'تقسیم', price: 0, locked: false }
+    ];
+    
+    operations.forEach(op => {
+        const isChecked = userSettings.operations.includes(op.id);
+        const div = document.createElement('div');
+        div.className = `checkbox-item ${isChecked ? 'checked' : ''} ${op.locked ? 'locked' : ''}`;
+        div.innerHTML = `
+            <div class="checkbox-icon">${op.icon}</div>
+            <div class="checkbox-label">${op.label}</div>
+        `;
+        
+        div.onclick = () => {
+            if (!op.locked) {
+                if (isChecked) {
+                    if (userSettings.operations.length > 1) {
+                        userSettings.operations = userSettings.operations.filter(o => o !== op.id);
+                        renderSettings();
+                    }
+                } else {
+                    userSettings.operations.push(op.id);
+                    renderSettings();
+                }
+            }
+        };
+        
+        opsContainer.appendChild(div);
+    });
+    
+    const diffContainer = document.getElementById('difficultyRadio');
+    diffContainer.innerHTML = '';
+    
+    Object.keys(difficultyLevels).forEach(key => {
+        const diff = difficultyLevels[key];
+        const isSelected = userSettings.difficulty === key;
+        const div = document.createElement('div');
+        div.className = `radio-item ${isSelected ? 'selected' : ''}`;
+        
+        const lockText = diff.locked ? ` (${diff.cost} سکه)` : '';
+        
+        div.innerHTML = `
+            <div class="radio-circle"></div>
+            <div class="radio-content">
+                <div class="radio-title">${diff.icon} ${diff.name}${lockText}</div>
+                <div class="radio-desc">${diff.desc}</div>
+            </div>
+        `;
+        
+        div.onclick = () => {
+            if (!diff.locked) {
+                userSettings.difficulty = key;
+                renderSettings();
+            } else if (gameState.coins >= diff.cost) {
+                if (confirm(`باز کردن سطح ${diff.name} با ${diff.cost} سکه؟`)) {
+                    gameState.coins -= diff.cost;
+                    diff.locked = false;
+                    userSettings.difficulty = key;
+                    saveGameData();
+                    renderSettings();
+                    playSound('coin');
+                }
+            } else {
+                showFeedback('❌', 'سکه کافی نداری!');
+            }
+        };
+        
+        diffContainer.appendChild(div);
+    });
+}
+
+function saveSettings() {
+    saveGameData();
+    showFeedback('✅', 'تنظیمات ذخیره شد!');
+    setTimeout(() => showLevelSelect(), 1000);
+}
+
+let currentShopTab = 'rockets';
+let selectedShopItem = null;
+
+function switchShopTab(tab) {
+    currentShopTab = tab;
+    document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    renderShopItems(tab);
+}
+
+function renderShopItems(category) {
+    const container = document.getElementById('shopItems');
+    container.innerHTML = '';
+    
+    if (category === 'powerups') {
+        shopItems.powerups.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'shop-item';
+            
+            card.innerHTML = `
+                <div class="shop-item-icon">${item.icon}</div>
+                <div class="shop-item-name">${item.name}</div>
+                <div style="font-size: 11px; color: #7f8c8d; margin: 5px 0;">${item.desc}</div>
+                <div class="shop-item-price">💰 ${item.price}</div>
+            `;
+            
+            card.onclick = () => {
+                if (gameState.coins >= item.price) {
+                    if (confirm(`خرید ${item.name} با ${item.price} سکه?`)) {
+                        gameState.coins -= item.price;
+                        
+                        if (item.id === 'powerup_time') {
+                            gameState.powerups.timeBoost++;
+                        } else if (item.id === 'powerup_skip') {
+                            gameState.powerups.skipQuestion++;
+                        }
+                        
+                        saveGameData();
+                        updateShopBalance();
+                        showFeedback('✅', 'خریداری شد!');
+                        playSound('coin');
+                    }
+                } else {
+                    showFeedback('❌', 'سکه کافی نداری!');
+                }
+            };
+            
+            container.appendChild(card);
+        });
+        return;
+    }
+    
+    if (category === 'titles') {
+        shopItems.titles.forEach(item => {
+            const isOwned = inventory.titles.includes(item.id);
+            const isEquipped = userSettings.equippedTitle === item.id;
+            
+            const card = document.createElement('div');
+            card.className = `shop-item ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''} ${!isOwned && item.price > gameState.coins ? 'locked' : ''}`;
+            
+            let badge = '';
+            if (isEquipped) badge = '<div class="shop-item-badge">در حال استفاده</div>';
+            else if (isOwned) badge = '<div class="shop-item-badge">خریداری شده</div>';
+            
+            card.innerHTML = `
+                ${!isOwned ? '<div class="shop-item-lock">🔒</div>' : ''}
+                ${badge}
+                <div class="shop-item-icon">${item.icon}</div>
+                <div class="shop-item-name">${item.name}</div>
+                <div class="shop-item-price">${isOwned ? (isEquipped ? '✔ انتخاب شده' : 'استفاده کن') : '💰 ' + item.price}</div>
+            `;
+            
+            card.onclick = () => {
+                if (isOwned && !isEquipped) {
+                    userSettings.equippedTitle = item.id;
+                    saveGameData();
+                    renderShopItems(category);
+                    showFeedback('✅', 'انتخاب شد!');
+                    playSound('coin');
+                } else if (!isOwned) {
+                    openPurchaseModal(item, category);
+                }
+            };
+            
+            container.appendChild(card);
+        });
+        return;
+    }
+    
+    const categoryMap = {
+        'rockets': 'rockets',
+        'backgrounds': 'backgrounds',
+        'music': 'music',
+        'effects': 'effects'
+    };
+    
+    const items = shopItems[categoryMap[category]];
+    
+    items.forEach(item => {
+        const isOwned = item.owned;
+        const settingKey = category === 'rockets' ? 'equippedRocket' : 
+                          category === 'backgrounds' ? 'equippedBackground' :
+                          category === 'music' ? 'equippedMusic' : 'equippedEffect';
+        const isEquipped = userSettings[settingKey] === item.id;
+        
+        const card = document.createElement('div');
+        card.className = `shop-item ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''} ${!isOwned && item.price > gameState.coins ? 'locked' : ''}`;
+        
+        let badge = '';
+        if (isEquipped) badge = '<div class="shop-item-badge">در حال استفاده</div>';
+        else if (isOwned) badge = '<div class="shop-item-badge">خریداری شده</div>';
+        
+        card.innerHTML = `
+            ${!isOwned ? '<div class="shop-item-lock">🔒</div>' : ''}
+            ${badge}
+            <div class="shop-item-icon">${item.icon}</div>
+            <div class="shop-item-name">${item.name}</div>
+            <div class="shop-item-price">${isOwned ? (isEquipped ? '✔ انتخاب شده' : 'استفاده کن') : '💰 ' + item.price}</div>
+        `;
+        
+        card.onclick = () => {
+            if (isOwned && !isEquipped) {
+                userSettings[settingKey] = item.id;
+                saveGameData();
+                renderShopItems(category);
+                showFeedback('✅', 'انتخاب شد!');
+                playSound('coin');
+            } else if (!isOwned) {
+                openPurchaseModal(item, category);
+            }
+        };
+        
+        container.appendChild(card);
+    });
+}
+
+function updateShopBalance() {
+    document.getElementById('shopCoins').textContent = gameState.coins;
+}
+
+function openPurchaseModal(item, category) {
+    if (gameState.coins < item.price) {
+        showFeedback('❌', 'سکه کافی نداری!');
+        return;
+    }
+    
+    selectedShopItem = { item, category };
+    document.getElementById('purchaseIcon').textContent = item.icon;
+    document.getElementById('purchaseTitle').textContent = item.name;
+    document.getElementById('purchaseDesc').textContent = `آیا می‌خواهی این آیتم رو بخری؟`;
+    document.getElementById('purchasePrice').textContent = `💰 ${item.price}`;
+    document.getElementById('purchaseModal').classList.remove('hidden');
+    
+    document.getElementById('confirmPurchaseBtn').onclick = confirmPurchase;
+}
+
+function closePurchaseModal() {
+    document.getElementById('purchaseModal').classList.add('hidden');
+    selectedShopItem = null;
+}
+
+function confirmPurchase() {
+    if (!selectedShopItem) return;
+    
+    const { item, category } = selectedShopItem;
+    
+    if (gameState.coins >= item.price) {
+        gameState.coins -= item.price;
+        item.owned = true;
+        
+        if (category === 'titles') {
+            inventory.titles.push(item.id);
+        } else {
+            const categoryMap = {
+                'rockets': 'rockets',
+                'backgrounds': 'backgrounds',
+                'music': 'music',
+                'effects': 'effects'
+            };
+            
+            inventory[categoryMap[category]].push(item.id);
+        }
+        
+        saveGameData();
+        updateShopBalance();
+        closePurchaseModal();
+        renderShopItems(category);
+        
+        showFeedback('🎉', 'خریداری شد!');
+        playSound('coin');
+        checkMedals();
+    }
+}
+
+function renderStats() {
+    document.getElementById('totalGames').textContent = gameState.totalGames;
+    document.getElementById('totalCorrect').textContent = gameState.correctAnswers;
+    document.getElementById('totalWrong').textContent = gameState.wrongAnswers;
+    document.getElementById('bestAltitude').textContent = gameState.bestAltitude;
+    document.getElementById('totalCoins').textContent = gameState.coins;
+    document.getElementById('totalMedalsCount').textContent = unlockedMedals.length;
+    document.getElementById('bestCombo').textContent = gameState.maxCombo;
+    document.getElementById('currentStreak').textContent = streakData.current;
+    
+    const total = gameState.correctAnswers + gameState.wrongAnswers;
+    const successRate = total > 0 ? Math.round((gameState.correctAnswers / total) * 100) : 0;
+    
+    document.getElementById('successRate').style.width = successRate + '%';
+    document.getElementById('successRate').textContent = successRate + '%';
+    
+    updateRank();
+}
+
+function updateRank() {
+    const altitude = gameState.bestAltitude;
+    let rank = { icon: '🥉', name: 'مبتدی' };
+    
+    if (altitude >= 5000) rank = { icon: '👑', name: 'افسانه' };
+    else if (altitude >= 3000) rank = { icon: '💎', name: 'استاد' };
+    else if (altitude >= 1500) rank = { icon: '🥇', name: 'حرفه‌ای' };
+    else if (altitude >= 500) rank = { icon: '🥈', name: 'ماهر' };
+    
+    document.getElementById('rankIcon').textContent = rank.icon;
+    document.getElementById('rankName').textContent = rank.name;
+}
+
+function renderMedals() {
+    const container = document.getElementById('medalsContent');
+    container.innerHTML = '';
+    
+    const categories = [
+        { key: 'bronze', name: '🥉 برنز', color: '#cd7f32' },
+        { key: 'silver', name: '🥈 نقره', color: '#c0c0c0' },
+        { key: 'gold', name: '🥇 طلا', color: '#ffd700' },
+        { key: 'diamond', name: '💎 الماس', color: '#b9f2ff' },
+        { key: 'legend', name: '👑 افسانه', color: '#ff00ff' }
+    ];
+    
+    categories.forEach(cat => {
+        const section = document.createElement('div');
+        section.className = 'medals-category';
+        
+        section.innerHTML = `
+            <div class="medals-category-title" style="border-right: 5px solid ${cat.color}">
+                ${cat.name}
+            </div>
+            <div class="medals-grid" id="medals-${cat.key}"></div>
+        `;
+        
+        container.appendChild(section);
+        
+        const grid = document.getElementById(`medals-${cat.key}`);
+        medals[cat.key].forEach(medal => {
+            const isUnlocked = unlockedMedals.includes(medal.id);
+            const card = document.createElement('div');
+            card.className = `medal-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+            
+            card.innerHTML = `
+                <div class="medal-card-icon">${medal.icon}</div>
+                <div class="medal-card-name">${medal.name}</div>
+                <div class="medal-card-desc">${isUnlocked ? medal.desc : '🔒 مخفی'}</div>
+            `;
+            
+            grid.appendChild(card);
+        });
+    });
+}
+
+function checkMedals() {
+    newMedalsThisGame = [];
+    
+    Object.keys(medals).forEach(category => {
+        medals[category].forEach(medal => {
+            if (!unlockedMedals.includes(medal.id)) {
+                try {
+                    if (medal.check()) {
+                        unlockedMedals.push(medal.id);
+                        newMedalsThisGame.push(medal);
+                        showMedalUnlock(medal);
+                        playSound('medal');
+                    }
+                } catch (e) {
+                    // Medal check failed
+                }
+            }
+        });
+    });
+    
+    if (newMedalsThisGame.length > 0) {
+        saveGameData();
+    }
+}
+
+function showMedalUnlock(medal) {
+    const modal = document.getElementById('medalUnlockModal');
+    document.getElementById('medalUnlockIcon').textContent = medal.icon;
+    document.getElementById('medalUnlockTitle').textContent = medal.name;
+    document.getElementById('medalUnlockDesc').textContent = medal.desc;
+    
+    modal.classList.add('show');
+    setTimeout(() => modal.classList.remove('show'), 3000);
+}
+
+function closeMedalUnlock() {
+    document.getElementById('medalUnlockModal').classList.remove('show');
+}
+
+let currentTutorialTab = 'multiply';
+
+function switchTutorialTab(tab) {
+    currentTutorialTab = tab;
+    document.querySelectorAll('.tutorial-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    renderTutorial(tab);
+}
+
+function renderTutorial(tab) {
+    const container = document.getElementById('tutorialContent');
+    
+    if (tab === 'multiply') {
+        let html = '<h3 style="text-align: center; margin-bottom: 20px;">جدول ضرب</h3>';
+        html += '<div class="multiplication-table">';
+        
+        for (let i = 1; i <= 10; i++) {
+            for (let j = 1; j <= 10; j++) {
+                html += `
+                    <div class="table-item">
+                        <div class="table-item-question ltr-content">${i} × ${j}</div>
+                        <div class="table-item-answer">${i * j}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        html += '</div>';
+        container.innerHTML = html;
+    } else if (tab === 'tips') {
+        container.innerHTML = `
+            <h3 style="text-align: center; margin-bottom: 20px;">💡 نکات ریاضی</h3>
+            <ul class="tips-list">
+                <li class="tip-item">
+                    <span class="tip-icon">✖️</span>
+                    <span class="tip-text">برای ضرب در 5: عدد رو ضرب 10 کن و بعد نصفش کن</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">✖️</span>
+                    <span class="tip-text">برای ضرب در 9: عدد رو ضرب 10 کن و بعد خودش رو ازش کم کن</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">✖️</span>
+                    <span class="tip-text">برای ضرب در 11: عدد رو دو بار کنار هم بنویس (مثلا 23 × 11 = 253)</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">➕</span>
+                    <span class="tip-text">برای جمع اعداد نزدیک: یکی رو گرد کن و تفاوت رو اضافه/کم کن</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">➖</span>
+                    <span class="tip-text">برای تفریق: اگر سخته، هر دو طرف رو با یک عدد تغییر بده</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">➗</span>
+                    <span class="tip-text">برای تقسیم بر 2: نصف کن. برای تقسیم بر 4: دو بار نصف کن</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">🎯</span>
+                    <span class="tip-text">برای ضرب در 25: عدد رو تقسیم بر 4 کن و بعد ضرب در 100</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">🧠</span>
+                    <span class="tip-text">برای محاسبه سریع: اعداد رو به اجزای کوچک‌تر تبدیل کن</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">💡</span>
+                    <span class="tip-text">جدول ضرب 2، 5، 10 رو حفظ کن - بقیه رو از اونا بساز</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">⚡</span>
+                    <span class="tip-text">تمرین زیاد کلید موفقیته! هر روز چند دقیقه تمرین کن</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">🎯</span>
+                    <span class="tip-text">اول صحت، بعد سرعت! دقت مهم‌تر از تند بودن است</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">🔥</span>
+                    <span class="tip-text">از پاوراپ‌ها در لحظات سخت استفاده کن!</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">📝</span>
+                    <span class="tip-text">برای ضرب در 12: اول در 10 ضرب کن، بعد دو برابرش رو اضافه کن</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">🎨</span>
+                    <span class="tip-text">از الگوها استفاده کن: مثلا 6×8 = 6×10 - 6×2 = 48</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">🎪</span>
+                    <span class="tip-text">مربع اعداد رو یاد بگیر: 1، 4، 9، 16، 25، 36، 49، 64، 81، 100</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">🌟</span>
+                    <span class="tip-text">استرایک روزانه حفظ کن تا سکه بیشتری بگیری!</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">🏆</span>
+                    <span class="tip-text">با دوستات رقابت کن - یادگیری گروهی بهتره!</span>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-icon">🧩</span>
+                    <span class="tip-text">اگه گیر کردی، عدد رو به اجزای ساده‌تر تقسیم کن</span>
+                </li>
+            </ul>
+        `;
+    } else if (tab === 'guide') {
+        container.innerHTML = `
+            <h3 style="text-align: center; margin-bottom: 20px;">📖 راهنمای بازی</h3>
+            <div style="background: white; padding: 20px; border-radius: 15px;">
+                <h4 style="color: #3498db; margin-bottom: 10px;">🎮 چطور بازی کنم؟</h4>
+                <p style="margin-bottom: 15px; line-height: 1.6;">1. یک سطح انتخاب کن (عادی، شب، چالش و...)</p>
+                <p style="margin-bottom: 15px; line-height: 1.6;">2. به سوالات ریاضی پاسخ بده</p>
+                <p style="margin-bottom: 15px; line-height: 1.6;">3. با هر پاسخ درست سوخت موشک پر میشه</p>
+                <p style="margin-bottom: 15px; line-height: 1.6;">4. با پاسخ غلط ظرفیت مخزن کم میشه</p>
+                
+                <h4 style="color: #3498db; margin: 20px 0 10px;">💰 سکه چطور بگیرم؟</h4>
+                <p style="margin-bottom: 15px; line-height: 1.6;">- پاسخ درست: 5 سکه</p>
+                <p style="margin-bottom: 15px; line-height: 1.6;">- پاسخ سریع: 10 سکه</p>
+                <p style="margin-bottom: 15px; line-height: 1.6;">- کمبو: بونوس اضافی</p>
+                <p style="margin-bottom: 15px; line-height: 1.6;">- رکورد جدید: 100 سکه</p>
+                
+                <h4 style="color: #3498db; margin: 20px 0 10px;">⚡ پاوراپ‌ها</h4>
+                <p style="margin-bottom: 15px; line-height: 1.6;">- ⏰ زمان اضافه: +10 ثانیه سوخت</p>
+                <p style="margin-bottom: 15px; line-height: 1.6;">- ⏭️ رد سوال: سوال رو رد کن</p>
+                <p style="margin-bottom: 15px; line-height: 1.6;">- میتونی از فروشگاه بخری!</p>
+                
+                <h4 style="color: #3498db; margin: 20px 0 10px;">🔥 استرایک</h4>
+                <p style="margin-bottom: 15px; line-height: 1.6;">هر روز بازی کن تا استرایک بالا بره و سکه بونوس بگیری!</p>
+                
+                <h4 style="color: #3498db; margin: 20px 0 10px;">👑 لقب‌ها</h4>
+                <p style="margin-bottom: 15px; line-height: 1.6;">از فروشگاه لقب‌های مختلف بخر و خودت رو نشون بده!</p>
+            </div>
+        `;
+    }
+}
+
+function startGame(levelKey) {
+    gameState.currentLevel = levelKey;
+    const level = gameLevels[levelKey];
+    
+    gameState.score = 0;
+    gameState.altitude = 0;
+    gameState.fuel = level.initialFuel;
+    gameState.maxFuel = level.initialFuel;
+    gameState.combo = 0;
+    gameState.correctAnswers = 0;
+    gameState.wrongAnswers = 0;
+    gameState.isPlaying = true;
+    newMedalsThisGame = [];
+    
+    updateStreak();
+    
+    hideAllScreens();
+    document.getElementById('gameScreen').classList.remove('hidden');
+    
+    const rocketIcon = shopItems.rockets.find(r => r.id === userSettings.equippedRocket)?.icon || '🚀';
+    document.getElementById('rocket').innerHTML = `
+        ${rocketIcon}
+        <div class="rocket-fire">🔥</div>
+    `;
+    
+    document.getElementById('levelBadge').textContent = level.name + ' ' + level.icon;
+    document.getElementById('levelBadge').style.background = level.color;
+    
+    updateGameUI();
+    createSpaceObjects();
+    renderPowerups();
+    startFuelTimer();
+    generateQuestion();
+    
+    setTimeout(() => {
+        document.getElementById('answerInput').focus();
+    }, 100);
+}
+
+function renderPowerups() {
+    const container = document.getElementById('powerupsContainer');
+    container.innerHTML = '';
+    
+    if (gameState.powerups.timeBoost > 0) {
+        const btn = document.createElement('button');
+        btn.className = 'powerup-btn';
+        btn.innerHTML = `<span class="powerup-icon">⏰</span> زمان +10 (${gameState.powerups.timeBoost})`;
+        btn.onclick = usePowerupTime;
+        container.appendChild(btn);
+    }
+    
+    if (gameState.powerups.skipQuestion > 0) {
+        const btn = document.createElement('button');
+        btn.className = 'powerup-btn';
+        btn.innerHTML = `<span class="powerup-icon">⏭️</span> رد سوال (${gameState.powerups.skipQuestion})`;
+        btn.onclick = usePowerupSkip;
+        container.appendChild(btn);
+    }
+}
+
+function usePowerupTime() {
+    if (gameState.powerups.timeBoost > 0 && gameState.isPlaying) {
+        gameState.powerups.timeBoost--;
+        gameState.fuel = Math.min(gameState.fuel + 10, gameState.maxFuel);
+        updateGameUI();
+        renderPowerups();
+        showFeedback('⏰', '+10 ثانیه!');
+        playSound('powerup');
+        saveGameData();
+    }
+}
+
+function usePowerupSkip() {
+    if (gameState.powerups.skipQuestion > 0 && gameState.isPlaying) {
+        gameState.powerups.skipQuestion--;
+        generateQuestion();
+        renderPowerups();
+        showFeedback('⏭️', 'سوال رد شد!');
+        playSound('powerup');
+        saveGameData();
+    }
+}
+
+function generateQuestion() {
+    const operations = userSettings.operations;
+    const operation = operations[Math.floor(Math.random() * operations.length)];
+    const difficulty = difficultyLevels[userSettings.difficulty];
+    
+    let num1, num2, answer;
+    
+    if (userSettings.difficulty === 'veryEasy' || userSettings.difficulty === 'easy') {
+        num1 = Math.floor(Math.random() * 9) + 1;
+        num2 = Math.floor(Math.random() * 9) + 1;
+        
+        if (operation === '+') {
+            answer = num1 + num2;
+        } else if (operation === '-') {
+            if (num1 < num2) [num1, num2] = [num2, num1];
+            answer = num1 - num2;
+        } else if (operation === '×') {
+            answer = num1 * num2;
+        } else if (operation === '÷') {
+            answer = num1;
+            num1 = num1 * num2;
+        }
+    } else if (userSettings.difficulty === 'medium') {
+        num1 = Math.floor(Math.random() * 90) + 10;
+        num2 = Math.floor(Math.random() * 9) + 1;
+        
+        if (operation === '+') {
+            answer = num1 + num2;
+        } else if (operation === '-') {
+            answer = num1 - num2;
+        } else if (operation === '×') {
+            answer = num1 * num2;
+        } else if (operation === '÷') {
+            answer = num2;
+            const temp = num1;
+            num1 = temp * num2;
+            num2 = temp;
+        }
+    } else {
+        num1 = Math.floor(Math.random() * 90) + 10;
+        num2 = Math.floor(Math.random() * 90) + 10;
+        
+        if (operation === '+') {
+            answer = num1 + num2;
+        } else if (operation === '-') {
+            if (num1 < num2) [num1, num2] = [num2, num1];
+            answer = num1 - num2;
+        } else if (operation === '×') {
+            answer = num1 * num2;
+        } else if (operation === '÷') {
+            answer = Math.floor(num1 / num2);
+            num1 = answer * num2;
+        }
+    }
+    
+    gameState.currentQuestion = { num1, num2, operation, answer };
+    document.getElementById('questionText').textContent = `${num1} ${operation} ${num2} = ?`;
+    document.getElementById('answerInput').value = '';
+    document.getElementById('answerInput').classList.remove('correct', 'wrong');
+    
+    const submitBtn = document.getElementById('submitButton');
+    submitBtn.disabled = true;
+    
+    document.getElementById('answerInput').oninput = function() {
+        submitBtn.disabled = this.value.trim() === '';
+    };
+}
+
+function submitAnswer() {
+    const input = document.getElementById('answerInput');
+    let inputValue = input.value;
+    
+    const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+    const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    
+    for (let i = 0; i < 10; i++) {
+        inputValue = inputValue.replace(new RegExp(persianNumbers[i], 'g'), i.toString());
+        inputValue = inputValue.replace(new RegExp(arabicNumbers[i], 'g'), i.toString());
+    }
+    
+    const userAnswer = parseInt(inputValue);
+    
+    if (isNaN(userAnswer) || input.value === '') {
+        input.classList.add('shake');
+        setTimeout(() => input.classList.remove('shake'), 500);
+        return;
+    }
+    
+    const level = gameLevels[gameState.currentLevel];
+    const isCorrect = userAnswer === gameState.currentQuestion.answer;
+    
+    if (isCorrect) {
+        input.classList.add('correct');
+        handleCorrectAnswer(level);
+    } else {
+        input.classList.add('wrong');
+        handleWrongAnswer(level);
+    }
+    
+    checkMedals();
+    updateGameUI();
+    
+    setTimeout(() => {
+        generateQuestion();
+        input.classList.remove('correct', 'wrong');
+    }, 300);
+}
+
+function handleCorrectAnswer(level) {
+    showFeedback('✅');
+    playSound('correct');
+    
+    const baseScore = 10;
+    const comboBonus = gameState.combo * 2;
+    gameState.score += baseScore + comboBonus;
+    
+    let coinReward = 5;
+    if (gameState.combo >= 5) coinReward = 10;
+    coinReward = Math.floor(coinReward * level.coinMultiplier);
+    gameState.coins += coinReward;
+    
+    createCoinAnimation(coinReward);
+    
+    gameState.altitude += 100;
+    updateRocketPosition();
+    
+    gameState.fuel = Math.min(gameState.fuel + level.fuelBonus, gameState.maxFuel);
+    
+    gameState.combo++;
+    gameState.correctAnswers++;
+    
+    if (gameState.combo > gameState.maxCombo) {
+        gameState.maxCombo = gameState.combo;
+    }
+    
+    if (gameState.combo >= 3) {
+        showCombo();
+    }
+}
+
+function handleWrongAnswer(level) {
+    showFeedback('❌');
+    playSound('wrong');
+    
+    gameState.combo = 0;
+    hideCombo();
+    
+    gameState.maxFuel = Math.max(gameState.maxFuel - level.fuelPenalty, 5);
+    gameState.fuel = Math.min(gameState.fuel, gameState.maxFuel);
+    
+    gameState.wrongAnswers++;
+}
+
+function createCoinAnimation(amount) {
+    const coin = document.createElement('div');
+    coin.className = 'coin-animation';
+    coin.textContent = `💰 +${amount}`;
+    coin.style.left = '50%';
+    coin.style.top = '50%';
+    document.body.appendChild(coin);
+    
+    setTimeout(() => coin.remove(), 1000);
+}
+
+function startFuelTimer() {
+    if (gameState.fuelTimer) {
+        clearInterval(gameState.fuelTimer);
+    }
+    
+    gameState.fuelTimer = setInterval(() => {
+        if (gameState.currentLevel === 'infinite') return;
+        
+        gameState.fuel--;
+        updateGameUI();
+        
+        if (gameState.fuel <= 0) {
+            endGame();
+        }
+    }, 1000);
+}
+
+function updateGameUI() {
+    document.getElementById('gameScore').textContent = gameState.score;
+    document.getElementById('gameAltitude').textContent = gameState.altitude;
+    document.getElementById('gameRecord').textContent = gameState.bestAltitude;
+    document.getElementById('gameCoins').textContent = gameState.coins;
+    document.getElementById('fuelTime').textContent = gameState.fuel;
+    
+    const fuelPercent = (gameState.fuel / gameState.maxFuel) * 100;
+    const fuelFill = document.getElementById('fuelFill');
+    fuelFill.style.width = fuelPercent + '%';
+    document.getElementById('fuelPercent').textContent = Math.round(fuelPercent) + '%';
+    
+    if (fuelPercent > 50) {
+        fuelFill.style.background = 'linear-gradient(90deg, #2ecc71, #27ae60)';
+    } else if (fuelPercent > 25) {
+        fuelFill.style.background = 'linear-gradient(90deg, #f39c12, #e67e22)';
+    } else {
+        fuelFill.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+    }
+}
+
+function updateRocketPosition() {
+    const rocket = document.getElementById('rocket');
+    const container = document.querySelector('.rocket-area');
+    const maxHeight = container.offsetHeight - 100;
+    const newBottom = Math.min((gameState.altitude / 10), maxHeight);
+    rocket.style.bottom = newBottom + 'px';
+}
+
+function showFeedback(emoji, text = '') {
+    const feedback = document.getElementById('feedbackOverlay');
+    const emojis = {
+        '✅': ['✅', '🎉', '👍', '⭐', '🌟', '💫'],
+        '❌': ['❌']
+    };
+    
+    const randomEmoji = emoji === '✅' 
+        ? emojis['✅'][Math.floor(Math.random() * emojis['✅'].length)]
+        : emoji;
+    
+    feedback.textContent = randomEmoji;
+    feedback.style.color = emoji === '✅' ? '#2ecc71' : '#e74c3c';
+    feedback.classList.add('show');
+    
+    setTimeout(() => {
+        feedback.classList.remove('show');
+    }, 600);
+}
+
+function showCombo() {
+    const comboBadge = document.getElementById('comboBadge');
+    document.getElementById('comboCount').textContent = gameState.combo;
+    comboBadge.classList.remove('hidden');
+}
+
+function hideCombo() {
+    document.getElementById('comboBadge').classList.add('hidden');
+}
+
+function pauseGame() {
+    if (confirm('آیا می‌خواهی به منو برگردی؟ (پیشرفت ذخیره نمیشه)')) {
+        if (gameState.fuelTimer) {
+            clearInterval(gameState.fuelTimer);
+            gameState.fuelTimer = null;
+        }
+        gameState.isPlaying = false;
+        saveGameData();
+        backToMainMenu();
+    }
+}
+
+function endGame() {
+    if (gameState.fuelTimer) {
+        clearInterval(gameState.fuelTimer);
+    }
+    
+    gameState.isPlaying = false;
+    gameState.totalGames++;
+    
+    checkMedals();
+    
+    let isNewRecord = false;
+    if (gameState.altitude > gameState.bestAltitude) {
+        gameState.bestAltitude = gameState.altitude;
+        isNewRecord = true;
+    }
+    
+    let coinReward = Math.floor(gameState.score / 10);
+    if (isNewRecord) coinReward += 100;
+    if (gameState.combo >= 10) coinReward += 50;
+    if (gameState.combo >= 20) coinReward += 150;
+    
+    const level = gameLevels[gameState.currentLevel];
+    coinReward = Math.floor(coinReward * level.coinMultiplier);
+    
+    if (level.coinMultiplier > 0) {
+        gameState.coins += coinReward;
+    }
+    
+    saveGameData();
+    showGameOverModal(coinReward, isNewRecord);
+}
+
+function showGameOverModal(coinReward, isNewRecord) {
+    const modal = document.getElementById('gameOverModal');
+    
+    if (isNewRecord) {
+        document.getElementById('gameOverIcon').textContent = '🏆';
+        document.getElementById('gameOverTitle').textContent = 'رکورد جدید! 🎉';
+        document.getElementById('gameOverSubtitle').textContent = 'عالی بود!';
+    } else if (gameState.altitude >= 1000) {
+        document.getElementById('gameOverIcon').textContent = '🎮';
+        document.getElementById('gameOverTitle').textContent = 'عملکرد فوق‌العاده!';
+        document.getElementById('gameOverSubtitle').textContent = 'به این میگن استاد!';
+    } else if (gameState.altitude >= 500) {
+        document.getElementById('gameOverIcon').textContent = '😎';
+        document.getElementById('gameOverTitle').textContent = 'خوب بود!';
+        document.getElementById('gameOverSubtitle').textContent = 'داری بهتر میشی!';
+    } else {
+        document.getElementById('gameOverIcon').textContent = '🎮';
+        document.getElementById('gameOverTitle').textContent = 'بازی تمام شد!';
+        document.getElementById('gameOverSubtitle').textContent = 'ادامه بده، بهتر میشی!';
+    }
+    
+    document.getElementById('finalAltitude').textContent = gameState.altitude + ' متر';
+    document.getElementById('finalScore').textContent = gameState.score;
+    document.getElementById('finalCorrect').textContent = gameState.correctAnswers;
+    document.getElementById('finalWrong').textContent = gameState.wrongAnswers;
+    document.getElementById('finalBestCombo').textContent = gameState.combo;
+    document.getElementById('coinReward').textContent = `💰 +${coinReward} سکه`;
+    
+    if (newMedalsThisGame.length > 0) {
+        document.getElementById('newMedalNotif').classList.remove('hidden');
+        const medalsList = document.getElementById('newMedalsList');
+        medalsList.innerHTML = '';
+        
+        newMedalsThisGame.forEach(medal => {
+            const span = document.createElement('span');
+            span.className = 'new-medal-item';
+            span.textContent = medal.icon;
+            medalsList.appendChild(span);
+        });
+    } else {
+        document.getElementById('newMedalNotif').classList.add('hidden');
+    }
+    
+    modal.classList.remove('hidden');
+    hideCombo();
+}
+
+function restartGame() {
+    document.getElementById('gameOverModal').classList.add('hidden');
+    document.getElementById('rocket').style.bottom = '0px';
+    startGame(gameState.currentLevel);
+}
+
+document.getElementById('answerInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        submitAnswer();
+    }
+});
+
+function cleanup() {
+    if (gameState.fuelTimer) {
+        clearInterval(gameState.fuelTimer);
+        gameState.fuelTimer = null;
+    }
+    
+    if (shootingStarInterval) {
+        clearInterval(shootingStarInterval);
+        shootingStarInterval = null;
+    }
+}
+
+function init() {
+    console.log('%c🚀 بازی موشک ریاضی', 'font-size: 24px; color: #667eea; font-weight: bold;');
+    console.log('%cنسخه 2.1 فاینال - همه مشکلات حل شد!', 'font-size: 14px; color: #7f8c8d;');
+    
+    const loading = document.getElementById('loadingScreen');
+    if (loading) loading.classList.remove('hidden');
+    
+    loadGameData();
+    createStars();
+    updateMainMenuStats();
+    updateStreakDisplay();
+    initAudioContext();
+    
+    setTimeout(() => {
+        if (loading) loading.classList.add('hidden');
+        console.log('%c✅ بازی آماده است!', 'font-size: 14px; color: #2ecc71;');
+    }, 1000);
+}
+
+window.addEventListener('load', init);
+
+window.addEventListener('beforeunload', function (e) {
+    cleanup();
+    if (gameState.isPlaying) {
+        e.preventDefault();
+        e.returnValue = '';
+        return 'بازی در حال اجراست. مطمئنی میخوای خارج بشی؟';
+    }
+});
+
+window.addEventListener('unload', cleanup);
+    </script>
+</body>
+</html>
